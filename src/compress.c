@@ -17,7 +17,6 @@ struct CompressNode {
 	char val;
 	int hit;
 	struct HMNode hm_node;
-	struct RBNode rb_node;
 };
 
 struct CompressBall {
@@ -135,6 +134,7 @@ hmTreeMerge(struct HMNode *t1, struct HMNode *t2)
         return &node->hm_node;
 }
 
+/* FOR DEBUG
 static void
 dumpHMTree(struct HMNode *tree)
 {
@@ -154,6 +154,7 @@ dumpHMTree(struct HMNode *tree)
         }
         printf("return\n");
 }
+*/
 
 static void
 destroyNode(struct HMNode *node)
@@ -214,12 +215,8 @@ compressEncode(compress_t session)
 		assert(isLock(&ball));
 		unlockBall(&ball);
 	}
-	for(int i = 0; i < ball.index; i++)
-		printf("%d", BITS_TEST(ball.data, i));
-	printf("\n");
-	dumpHMTree(getHMRoot(new_session.encode_tree));
 	new_session.data = ball.data;
-	new_session.bit_size = ball.index;	
+	new_session.bit_size = ball.index;
         return new_session;
 }
 
@@ -250,6 +247,137 @@ compressDecode(compress_t session)
 		}
 	}
 	compress_t new_session = { data, index * BITS_PER_BYTE };
-
 	return new_session;
-}	
+}
+
+static void
+dumpEncodeTree(FILE *file, struct HMNode *tree, short num)
+{
+	if(tree->left == NULL && tree->right == NULL) {
+		fwrite(&container_of(tree, struct CompressNode, hm_node)->val, sizeof(char), 1, file);
+		fwrite(&num, sizeof(short), 1, file);
+		return;
+	}
+	if(tree->left != NULL)
+		dumpEncodeTree(file, tree->left, num * 2);
+	if(tree->right != NULL);
+		dumpEncodeTree(file, tree->right, num * 2 + 1);
+}
+			
+static void
+dumpCompressType(FILE *file, compress_t session)
+{
+	if(getHMRoot(session.encode_tree) == NULL) {
+		fwrite(session.data, session.bit_size / BITS_PER_BYTE, 1, file);
+	} else {
+		fwrite(&session.bit_size, sizeof(session.bit_size), 1, file);
+		fwrite(&session.bit_size, sizeof(session.bit_size), 1, file);
+		dumpEncodeTree(file, getHMRoot(session.encode_tree), 1);
+		int pos = ftell(file);
+		fwrite(session.data, session.bit_size / BITS_PER_BYTE + 1, 1, file);
+		fseek(file, sizeof(int), SEEK_SET);
+		fwrite(&pos, sizeof(int), 1, file);
+	}
+}
+	
+void
+compressEncodeFile(const char *in_file, const char *out_file)
+{
+	FILE *in_f = fopen(in_file, "rb");
+	assert(in_f != NULL);
+	FILE *out_f = fopen(out_file, "wb");
+	assert(out_f != NULL);
+	int data_size = INIT_BALL_SIZE;
+	int index = 0;
+	char *data = malloc(data_size);
+	assert(data != NULL);
+	char ch;
+	while(1) {
+		ch = getc(in_f);
+		if(feof(in_f))
+			break;
+		if(index == data_size) {
+			data_size *= 2;
+			data = realloc(data, data_size);
+			assert(data != NULL);
+		}
+		data[index++] = ch;
+	}
+	compress_t encode_session = makeCompressType(data, index);
+	free(data);
+	compress_t result_session = compressEncode(encode_session);
+	destroyCompressType(encode_session);
+	dumpCompressType(out_f, result_session);
+	destroyCompressType(result_session);
+	fclose(in_f);
+	fclose(out_f);
+}
+
+static inline int
+findPos(char *buf, unsigned int size, short num, char *val)
+{
+	short index;
+	for(int i = 0; i < size; i += sizeof(short) + sizeof(char)) {
+		memcpy(val, &buf[i], sizeof(char));
+		memcpy(&index, &buf[i+sizeof(char)], sizeof(short));
+		if(index == num)
+			return 1;
+	}
+	return 0;
+}
+
+static void
+loadEncodeTree(char *buf, unsigned int size, struct HMNode **hm_node_ptr, short num)
+{
+	struct CompressNode *node = malloc(sizeof(struct CompressNode));
+	assert(node != NULL);
+	memset(node, 0, sizeof(struct CompressNode));
+	*hm_node_ptr = &node->hm_node;
+	if(findPos(buf, size, num, &node->val)) {
+		return;
+	}
+	loadEncodeTree(buf, size, &node->hm_node.left, num * 2);
+	loadEncodeTree(buf, size, &node->hm_node.right, num * 2 + 1);
+}
+
+void
+compressDecodeFile(const char *in_file, const char *out_file)
+{
+	FILE *in_f = fopen(in_file, "rb");
+	assert(in_f != NULL);
+	FILE *out_f = fopen(out_file, "wb");
+	assert(out_f != NULL);
+	compress_t decode_session;
+	fread(&decode_session.bit_size, sizeof(decode_session.bit_size), 1, in_f);
+	int pos = 0;
+	fread(&pos, sizeof(pos), 1, in_f);
+	int buf_size = pos - ftell(in_f);
+	char *buf = malloc(buf_size);
+	assert(buf != NULL);
+	fread(buf, buf_size, 1, in_f);
+	loadEncodeTree(buf, buf_size, &decode_session.encode_tree.root, 1);
+//	dumpHMTree(decode_session.encode_tree.root);
+	int data_size = INIT_BALL_SIZE;
+	int index = 0;
+	char *data = malloc(data_size);
+	assert(data != NULL);
+	char ch;
+	while(1) {
+		ch = getc(in_f);
+		if(feof(in_f))
+			break;
+                if(index == data_size) {
+                         data_size *= 2;
+                         data = realloc(data, data_size);
+                         assert(data != NULL);
+                 }
+		data[index++] = ch;	
+	}
+	decode_session.data = data;
+	compress_t result_session = compressDecode(decode_session);
+	dumpCompressType(out_f, result_session);
+	destroyCompressType(decode_session);
+	destroyCompressType(result_session);
+	fclose(in_f);
+	fclose(out_f);
+}		
