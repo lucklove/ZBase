@@ -5,7 +5,7 @@
 int
 main(int argc, char *argv[])
 {
-	compressEncodeFile("./test.txt", "./test.txt.txt");	
-	compressDecodeFile("./test.txt.txt", "./test.txt");	
+	compressEncodeFile("./before_compress", "./after_compress");	
+	compressDecodeFile("./after_compress", "./before_compress");	
 	return 0;
 }
