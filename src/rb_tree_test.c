@@ -29,7 +29,7 @@ cmpKey(void *p1, void *p2)
         return strcmp(p1, p2);
 }
 
-struct RBNode*
+struct RBNode *
 makeNode(void *key)
 {
         struct MyNode *tmp = malloc(sizeof(struct MyNode));
@@ -40,6 +40,7 @@ makeNode(void *key)
 void
 freeNode(struct RBNode *node)
 {
+	printf("free %s\n", container_of(node, struct MyNode, node)->key);
         free(container_of(node, struct MyNode, node));
 }
 
@@ -63,7 +64,7 @@ show_rb_tree(struct RBNode* node){
 int 
 main(int argc, char *argv[]){
 //     	RBTree t = makeRBTree(getKey, cmpKey, makeNode, swapKey, freeNode);
-     	RBTree t = makeRBTree(getKey, cmpKey, makeNode, swapKey, NULL);
+     	RBTree t = makeRBTree(getKey, cmpKey, makeNode, swapKey, freeNode);
 	rb_insert(&t, "hello");
 	rb_insert(&t, "wawa");
 	rb_insert(&t, "nini");
@@ -79,6 +80,7 @@ main(int argc, char *argv[]){
      		printf("found\n");
         	printf("key:%s\n", container_of(node, struct MyNode, node)->key);
      	}
+	destroyRBTree(t);
         return 0;
 }
 

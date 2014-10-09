@@ -15,6 +15,23 @@ makeRBTree(void *(*getKey)(struct RBNode *), int (*cmpKey)(void *, void *),
 	return new_tree;
 }
 
+static void
+destroyTree(struct RBNode *tree, void (*freeFunc)(struct RBNode *))
+{
+	if(tree->lchild != NULL)
+		destroyTree(tree->lchild, freeFunc);
+	if(tree->rchild != NULL)
+		destroyTree(tree->rchild, freeFunc);
+	freeFunc(tree);
+}
+
+void
+destroyRBTree(RBTree tree)
+{
+	if(tree.freeNode != NULL)
+		destroyTree(tree.root, tree.freeNode);
+}
+	
 static struct RBNode* 
 clock_wise(RBTreePtr tree_ptr, struct RBNode* node)
 {

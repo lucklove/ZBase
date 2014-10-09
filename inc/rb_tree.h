@@ -23,5 +23,6 @@ RBTree 	makeRBTree(void *(*)(struct RBNode *), int (*)(void *, void *),		\
 	struct RBNode *(*)(void *key),						\
 	void    (*)(struct RBNode *, struct RBNode *),				\
 	void    (*)(struct RBNode *));
+void 	destroyRBTree(RBTree);
 
 #endif
