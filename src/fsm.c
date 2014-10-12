@@ -3,8 +3,6 @@
 #include "rb_tree.h"
 #include "container.h"
 
-#include <stdio.h>
-
 struct EventLink {
 	int event;
 	int dst_state;
@@ -60,7 +58,6 @@ static void
 toFreeNode(struct RBNode *node)
 {
 	destroyMem(container_of(node, struct FSMNode, rb_node)->events);
-	printf("free %d\n", container_of(node, struct FSMNode, rb_node)->state);
 	free(container_of(node, struct FSMNode, rb_node));
 }
 
@@ -91,6 +88,12 @@ fsmSetCurState(fsm_t_ptr fsm_p, int state)
 	//确保state和在红黑树中
 	rb_insert(&fsm_p->rb_tree, &state);
 	fsm_p->cur_state = container_of(rb_search(fsm_p->rb_tree, &state), struct FSMNode, rb_node);
+}
+
+int
+fsmGetCurState(fsm_t fsm)
+{
+	return fsm.cur_state->state;
 }
 
 void

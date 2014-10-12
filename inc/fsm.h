@@ -19,6 +19,7 @@ typedef struct {
 
 fsm_t makeFSMType(void (*)(int, int));
 void fsmSetCurState(fsm_t_ptr, int);
+int  fsmGetCurState(fsm_t);
 void fsmSetHander(fsm_t_ptr, int, void (*)(int, int, int));
 void fsmLink(fsm_t_ptr, int, int, int);
 void fsmPushEvent(fsm_t_ptr, int);

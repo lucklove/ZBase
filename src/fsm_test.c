@@ -36,6 +36,7 @@ main(int argc, char *argv[])
 			continue;
 		printf("push %d\n", ch - '0');
 		fsmPushEvent(&fsm, ch - '0');
+		printf("cur state is %d\n", fsmGetCurState(fsm));
 	}
 	destroyFSMType(fsm);
 	return 0;

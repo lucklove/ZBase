@@ -31,6 +31,12 @@ destroyRBTree(RBTree tree)
 	if(tree.freeNode != NULL)
 		destroyTree(tree.root, tree.freeNode);
 }
+
+struct RBNode *
+rbGetRoot(RBTree tree)
+{
+	return tree.root;
+}
 	
 static struct RBNode* 
 clock_wise(RBTreePtr tree_ptr, struct RBNode* node)
@@ -85,7 +91,7 @@ counter_clock_wise(RBTreePtr tree_ptr, struct RBNode* node)
 }
 
 struct RBNode* 
-rb_search(RBTree tree, void *key)
+rbSearch(RBTree tree, void *key)
 {
 	struct RBNode *p = tree.root;
 	while(p != NULL){
@@ -110,7 +116,7 @@ newNode(RBTreePtr tree_ptr, struct RBNode* parent, void *key)
 }
 
 void 
-rb_insert(RBTreePtr tree_ptr, void *key)
+rbInsert(RBTreePtr tree_ptr, void *key)
 {
 	struct RBNode *p= tree_ptr->root, *q=NULL;
 
@@ -153,9 +159,9 @@ rb_insert(RBTreePtr tree_ptr, void *key)
 }
  
 void 
-rb_delete(RBTreePtr tree_ptr, void *key) 
+rbDelete(RBTreePtr tree_ptr, void *key) 
 {
-	struct RBNode *v = rb_search(*tree_ptr, key), *u, *p, *c, *b;
+	struct RBNode *v = rbSearch(*tree_ptr, key), *u, *p, *c, *b;
 	if(v == NULL) 
 		return;
  	u = v;

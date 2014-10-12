@@ -65,17 +65,17 @@ int
 main(int argc, char *argv[]){
 //     	RBTree t = makeRBTree(getKey, cmpKey, makeNode, swapKey, freeNode);
      	RBTree t = makeRBTree(getKey, cmpKey, makeNode, swapKey, freeNode);
-	rb_insert(&t, "hello");
-	rb_insert(&t, "wawa");
-	rb_insert(&t, "nini");
-	rb_insert(&t, "wowo");
-	rb_insert(&t, "cao");
-	rb_insert(&t, "nima");
-	rb_insert(&t, "hello");
-     	rb_delete(&t, "hello");
-//     	rb_delete(&t, "hello");
+	rbInsert(&t, "hello");
+	rbInsert(&t, "wawa");
+	rbInsert(&t, "nini");
+	rbInsert(&t, "wowo");
+	rbInsert(&t, "cao");
+	rbInsert(&t, "nima");
+	rbInsert(&t, "hello");
+     	rbDelete(&t, "hello");
+//     	rbDelete(&t, "hello");
      	show_rb_tree(t.root);
-     	struct RBNode *node = rb_search(t, "hello");
+     	struct RBNode *node = rbSearch(t, "hello");
      	if(node != NULL) {
      		printf("found\n");
         	printf("key:%s\n", container_of(node, struct MyNode, node)->key);

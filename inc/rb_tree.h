@@ -15,9 +15,11 @@ typedef struct {
         struct RBNode *root;
 } RBTree, *RBTreePtr;
 
-void		rb_insert(RBTreePtr, void *);
-void		rb_delete(RBTreePtr, void *);
-struct RBNode*	rb_search(RBTree, void *);
+void		rbInsert(RBTreePtr, void *);
+void		rbDelete(RBTreePtr, void *);
+struct RBNode*	rbSearch(RBTree, void *);
+
+struct RBNode* getRBRoot(RBTree);
 
 RBTree 	makeRBTree(void *(*)(struct RBNode *), int (*)(void *, void *),		\
 	struct RBNode *(*)(void *key),						\
