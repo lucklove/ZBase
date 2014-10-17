@@ -16,12 +16,9 @@ void setMemIndex(mem_t_ptr, unsigned int);
 unsigned int getMemIndex(mem_t mem);
 void destroyMem(mem_t);
 
-#define GET_TYPE_MEM(mem_t_ptr, type, _index)					\
-({										\
-	(type *)getMemPtr(mem_t_ptr, sizeof(type) * _index, sizeof(type));	\
-})
+#define GET_ITEM_NUM(mem_t, item_type) (getMemIndex(mem_t) / (unsigned int)sizeof(item_type))
 
-#undef index
+#define GET_TYPE_MEM(mem_t_ptr, type, _index) ((type *)getMemPtr(mem_t_ptr, sizeof(type) * _index, sizeof(type)))
 
 #define SET_TYPE_MEM(mem_t_ptr, type, _index, val)				\
 do {										\

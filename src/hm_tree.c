@@ -7,6 +7,7 @@
 #define NULL ((void *)0)
 #endif
 
+
 inline struct HMNode *
 getHMRoot(HMTree tree)
 {
@@ -18,8 +19,7 @@ makeHMSeed(struct HMNode **seeds, unsigned int seed_num,
 	int (*cmpHMNode)(void *, void *),
 	struct HMNode *(*mergeHMTree)(struct HMNode *, struct HMNode *))
 {
-	HMSeed new_seed = { cmpHMNode, mergeHMTree, seeds, seed_num };
-	return new_seed;
+	return (HMSeed){ cmpHMNode, mergeHMTree, seeds, seed_num };
 }
 
 HMTree

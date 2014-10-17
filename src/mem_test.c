@@ -10,11 +10,12 @@ struct MyStruct {
 int
 main(int argc, char *argv[])
 {
-	struct MyStruct t1 = { 1, '1', "1" };
-	struct MyStruct t2 = { 2, '2', "2" };
+	struct MyStruct t1 = { 1, '1', "12" };
+	struct MyStruct t2 = { 2, '2', "22" };
 	mem_t mem = makeMem(1);
 	SET_TYPE_MEM(&mem, struct MyStruct, 0, t1);
 	SET_TYPE_MEM(&mem, struct MyStruct, 2, t2);
+	printf("There are %d items\n", GET_ITEM_NUM(mem, struct MyStruct));
 	printf("%d %c %s %p\n", 
 		GET_TYPE_MEM(&mem, struct MyStruct, 0)->i,
 		GET_TYPE_MEM(&mem, struct MyStruct, 0)->c,

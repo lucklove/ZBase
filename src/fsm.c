@@ -64,20 +64,18 @@ toFreeNode(struct RBNode *node)
 fsm_t
 makeFSMType(void (*err_hander)(int, int))
 {
-	fsm_t fsm;
-	fsm.err_hander = err_hander;
-	fsm.rb_tree = makeRBTree(toGetKey, toCmpKey, toMakeNode, toSwapNode, toFreeNode);
-	fsm.cur_state = NULL;
-	return fsm;
+	return (fsm_t){ .err_hander = err_hander, 
+			.rb_tree = makeRBTree(toGetKey, toCmpKey, toMakeNode, toSwapNode, toFreeNode),
+			.cur_state = NULL };
 }
 
 void 
 fsmLink(fsm_t_ptr fsm_p, int from_state, int event, int to_state)
 {
 	//确保from_state和to_state在红黑树中
-	rb_insert(&fsm_p->rb_tree, &from_state);
-	rb_insert(&fsm_p->rb_tree, &to_state);
-	struct FSMNode *node = container_of(rb_search(fsm_p->rb_tree, &from_state), struct FSMNode, rb_node);
+	rbInsert(&fsm_p->rb_tree, &from_state);
+	rbInsert(&fsm_p->rb_tree, &to_state);
+	struct FSMNode *node = container_of(rbSearch(fsm_p->rb_tree, &from_state), struct FSMNode, rb_node);
 	struct EventLink link = { event, to_state };
 	SET_TYPE_MEM(&node->events, struct EventLink, getMemIndex(node->events) / sizeof(struct EventLink), link);
 }
@@ -86,8 +84,8 @@ void
 fsmSetCurState(fsm_t_ptr fsm_p, int state)
 {
 	//确保state和在红黑树中
-	rb_insert(&fsm_p->rb_tree, &state);
-	fsm_p->cur_state = container_of(rb_search(fsm_p->rb_tree, &state), struct FSMNode, rb_node);
+	rbInsert(&fsm_p->rb_tree, &state);
+	fsm_p->cur_state = container_of(rbSearch(fsm_p->rb_tree, &state), struct FSMNode, rb_node);
 }
 
 int
@@ -100,8 +98,8 @@ void
 fsmSetHander(fsm_t_ptr fsm_p, int state, void (*hander)(int, int, int))
 {
 	//确保state和在红黑树中
-	rb_insert(&fsm_p->rb_tree, &state);
-	struct FSMNode *node = container_of(rb_search(fsm_p->rb_tree, &state), struct FSMNode, rb_node);
+	rbInsert(&fsm_p->rb_tree, &state);
+	struct FSMNode *node = container_of(rbSearch(fsm_p->rb_tree, &state), struct FSMNode, rb_node);
 	node->trans_hander = hander;
 }
 

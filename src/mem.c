@@ -19,8 +19,7 @@ makeMem(unsigned int init_size)
 	void *ptr = malloc(init_size);
 	assert(ptr != NULL);
 	memset(ptr, 0, init_size);
-	mem_t new_mem = { ptr, 0, init_size };
-	return new_mem;
+	return (mem_t){ ptr, 0, init_size };
 }
 
 void *

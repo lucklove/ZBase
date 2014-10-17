@@ -4,8 +4,14 @@
 #include <stdlib.h>
 
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
-#define container_of(ptr, type, member) ({			\
-	const typeof(((type *)0)->member) * __mptr = (ptr);	\
-	(type *)((char *)__mptr - offsetof(type, member)); })
+
+#ifdef __GNUC__
+#define member_type(type, member) __typeof__(((type *)0)->member)
+#else
+#define member_type(type, member) const void
+#endif
+
+#define container_of(ptr, type, member) \
+	((type *)((char *)(member_type(type, member) *){ptr} - offsetof(type, member))) 	
 
 #endif

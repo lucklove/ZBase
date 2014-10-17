@@ -11,8 +11,7 @@ makeRBTree(void *(*getKey)(struct RBNode *), int (*cmpKey)(void *, void *),
 	void	(*swapKey)(struct RBNode *, struct RBNode *),
 	void	(*freeNode)(struct RBNode *))
 {
-	RBTree new_tree = { getKey, cmpKey, makeNode, swapKey, freeNode, NULL };
-	return new_tree;
+	return (RBTree){ getKey, cmpKey, makeNode, swapKey, freeNode, NULL };
 }
 
 static void

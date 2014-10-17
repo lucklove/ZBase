@@ -5,15 +5,13 @@
 inline Object
 makeInt(int val)
 { 
-	Object obj = { .type = OBJ_INT, .intval = val };
-	return obj;
+	return (Object){ .type = OBJ_INT, .intval = val };
 }
 
 inline Object
 makeChar(char val)
 {
-	Object obj = { .type = OBJ_CHAR, .charval = val };
-	return obj;
+	return (Object){ .type = OBJ_CHAR, .charval = val };
 }
 
 inline Object

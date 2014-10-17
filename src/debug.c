@@ -1,10 +1,10 @@
 #include "debug.h"
-#include "config.h"
-#include "mem.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+
+#define DEBUG_FILE "debug.log"
 
 struct debug_t *d_list = NULL;
 static int pth_number;
@@ -15,7 +15,7 @@ debug_init(int pth_num)
 {
 	debug_file = fopen(DEBUG_FILE, "w");
 	assert(debug_file != NULL);
-	Malloc(d_list, sizeof(struct debug_t) * pth_num);
+	d_list = malloc(sizeof(struct debug_t) * pth_num);
 	pth_number = pth_num;
 }
 

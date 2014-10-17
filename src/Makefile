@@ -1,6 +1,6 @@
 CC = gcc
 RM = rm
-CFLAGS = -O -Wall -std=gnu11 -I../inc -ltcmalloc
+CFLAGS = -O -Wall -std=c11 -I../inc -ltcmalloc
 
 MEM_TEST_OBJS = mem.o mem_test.o
 
@@ -21,7 +21,10 @@ RANDOM_TEST_OBJS = random.o random_test.o
 .c.o:
 	$(CC) -c $(CFLAGS) $*.c
 
-all: compress_test bits_test rb_test hm_test base64_test random_test
+all: compress_test bits_test rb_test hm_test base64_test random_test fsm_test mem_test
+
+sha1_test: $(SHA1_TEST_OBJS)
+	$(CC) $(CFLAGS) -o $@ $(SHA1_TEST_OBJS)
 
 random_test: $(RANDOM_TEST_OBJS)
 	$(CC) $(CFLAGS) -o $@ $(RANDOM_TEST_OBJS)
