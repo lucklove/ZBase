@@ -1,5 +1,4 @@
-#ifndef HM_TREE_H
-#define HM_TREE_H
+#pragma once
 
 struct HMNode {
 	struct HMNode *left;
@@ -22,5 +21,3 @@ HMSeed makeHMSeed(struct HMNode **, unsigned int, int (*)(void *, void *),
 HMTree makeHMTree(HMSeed);
 void destroyHMTree(HMTree, void (*)(struct HMNode *));
 struct HMNode *getHMRoot(HMTree);
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef CONTAINER_H
-#define CONTAINER_H
+#pragma once
 
 #include <stdlib.h>
 
@@ -13,5 +12,3 @@
 
 #define container_of(ptr, type, member) \
 	((type *)((char *)(member_type(type, member) *){ptr} - offsetof(type, member))) 	
-
-#endif

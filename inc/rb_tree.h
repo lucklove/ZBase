@@ -1,5 +1,4 @@
-#ifndef RB_TREE_H
-#define RB_TREE_H
+#pragma once
 
 struct RBNode {
         struct RBNode* lchild, *rchild, *parent;
@@ -26,5 +25,3 @@ RBTree 	makeRBTree(void *(*)(struct RBNode *), int (*)(void *, void *),		\
 	void    (*)(struct RBNode *, struct RBNode *),				\
 	void    (*)(struct RBNode *));
 void 	destroyRBTree(RBTree);
-
-#endif

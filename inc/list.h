@@ -1,5 +1,4 @@
-#ifndef LIST_H
-#define LIST_H
+#pragma once
 
 #include "container.h"
 
@@ -15,6 +14,3 @@ struct list_node {
 
 void list_add(struct list_node *, struct list_node *);
 void list_del(struct list_node *);
-
-#endif
-	

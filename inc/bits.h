@@ -1,5 +1,4 @@
-#ifndef BITS_H
-#define BITS_H
+#pragma once
 
 #define BITS_PER_BYTE 8
 
@@ -21,5 +20,3 @@
 void bits_set(void *, unsigned int);
 void bits_clr(void *, unsigned int);
 int bits_test(void *, unsigned int);
-
-#endif

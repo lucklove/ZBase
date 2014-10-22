@@ -1,7 +1,4 @@
-#ifndef RANDOM_H_
-#define RANDOM_H_
+#pragma once
 
 void randSeed(unsigned int seed);
 unsigned int randGen(void);
-
-#endif

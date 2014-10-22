@@ -115,7 +115,8 @@ fsmPushEvent(fsm_t_ptr fsm_p, int event)
 			return;
 		}
 	}
-	fsm_p->err_hander(fsm_p->cur_state->state, event);
+	if(fsm_p->err_hander != NULL)
+		fsm_p->err_hander(fsm_p->cur_state->state, event);
 }
 
 void

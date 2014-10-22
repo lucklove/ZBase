@@ -18,10 +18,20 @@ FSM_TEST_OBJS = fsm.o fsm_test.o mem.o rb_tree.o
 
 RANDOM_TEST_OBJS = random.o random_test.o
 
+JSON_TEST_OBJS = json.o json_test.o mem.o
+
+REF_TEST_OBJS = ref.o ref_test.o
+
 .c.o:
 	$(CC) -c $(CFLAGS) $*.c
 
-all: compress_test bits_test rb_test hm_test base64_test random_test fsm_test mem_test
+all: compress_test bits_test rb_test hm_test base64_test random_test fsm_test mem_test json_test ref_test
+
+ref_test: $(REF_TEST_OBJS)
+	$(CC) $(CFLAGS) -o $@ $(REF_TEST_OBJS)
+
+json_test: $(JSON_TEST_OBJS)
+	$(CC) $(CFLAGS) -o $@ $(JSON_TEST_OBJS)
 
 sha1_test: $(SHA1_TEST_OBJS)
 	$(CC) $(CFLAGS) -o $@ $(SHA1_TEST_OBJS)
@@ -51,4 +61,4 @@ hm_test: $(HM_TEST_OBJS)
 	$(CC) $(CLFAGS) -o $@ $(HM_TEST_OBJS)
 
 clean:
-	$(RM) -f *.o compress_test bits_test rb_test hm_test base64_test mem_test fsm_test
+	$(RM) -f *.o compress_test bits_test rb_test hm_test base64_test mem_test fsm_test json_test random_test ref_test

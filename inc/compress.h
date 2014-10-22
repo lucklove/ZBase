@@ -1,5 +1,4 @@
-#ifndef COMPRESS_H
-#define COMPRESS_H
+#pragma once
 
 #include "rb_tree.h"
 #include "hm_tree.h"
@@ -16,5 +15,3 @@ compress_t 	compressEncode(compress_t);
 compress_t	compressDecode(compress_t);
 void		compressEncodeFile(const char *, const char *);
 void		compressDecodeFile(const char *, const char *);
-
-#endif

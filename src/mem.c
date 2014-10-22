@@ -7,7 +7,12 @@ static inline void
 assert_mem_capacity(mem_t_ptr mem_p, unsigned int need)
 {
 	if(mem_p->len < need) {
-		mem_p->mem_ptr = realloc(mem_p->mem_ptr, need << 1);
+		assert(need < 1024 && need > 0);
+		if(mem_p->mem_ptr == NULL) {
+			mem_p->mem_ptr = malloc(need << 1);
+		} else {
+			mem_p->mem_ptr = realloc(mem_p->mem_ptr, need << 1);
+		}
 		assert(mem_p->mem_ptr != NULL);
 		mem_p->len = need << 1;
 	}
@@ -16,6 +21,8 @@ assert_mem_capacity(mem_t_ptr mem_p, unsigned int need)
 mem_t
 makeMem(unsigned int init_size)
 {
+	if(init_size == 0)
+		return (mem_t){ 0 };
 	void *ptr = malloc(init_size);
 	assert(ptr != NULL);
 	memset(ptr, 0, init_size);
@@ -43,7 +50,7 @@ getMemIndex(mem_t mem)
 }
 	
 void
-memCpy(mem_t_ptr mem_p, void *src, unsigned int len)
+memCpy(mem_t_ptr mem_p, const void *src, unsigned int len)
 {
 	assert_mem_capacity(mem_p, len);
 	memcpy(mem_p->mem_ptr, src, len);
@@ -59,7 +66,7 @@ memSet(mem_t_ptr mem_p, char val, unsigned int len)
 }
 
 void
-memCat(mem_t_ptr mem_p, void *src, unsigned int len)
+memCat(mem_t_ptr mem_p, const void *src, unsigned int len)
 {
 	assert_mem_capacity(mem_p, len + mem_p->index);
 	memcpy((char *)mem_p->mem_ptr + mem_p->index, src, len);
@@ -69,5 +76,6 @@ memCat(mem_t_ptr mem_p, void *src, unsigned int len)
 void
 destroyMem(mem_t mem)
 {
-	free(mem.mem_ptr);
+	if(mem.mem_ptr != NULL)
+		free(mem.mem_ptr);
 }		

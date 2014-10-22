@@ -1,5 +1,4 @@
-#ifndef DEBUG_H
-#define DEBUG_H
+#pragma once
 
 #include <pthread.h>
 #include <stdio.h>
@@ -31,5 +30,3 @@ void debug_record(pthread_t, char *, int);
 void debug_stat(void);
 void debug_mem_new(char *, int, void *);
 void debug_mem_free(char *, int, void *);
-
-#endif

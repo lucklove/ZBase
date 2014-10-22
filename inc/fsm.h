@@ -1,5 +1,4 @@
-#ifndef FSM_H
-#define FSM_H
+#pragma once
 
 #include "mem.h"
 #include "rb_tree.h"
@@ -24,5 +23,3 @@ void fsmSetHander(fsm_t_ptr, int, void (*)(int, int, int));
 void fsmLink(fsm_t_ptr, int, int, int);
 void fsmPushEvent(fsm_t_ptr, int);
 void destroyFSMType(fsm_t);
-
-#endif

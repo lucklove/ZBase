@@ -1,5 +1,4 @@
-#ifndef BASE64_H
-#define BASE64_H
+#pragma once
 
 #include "mem.h"
 
@@ -15,5 +14,3 @@ void *getBase64Ptr(base64_t);
 unsigned int getBase64Len(base64_t);
 void base64EncodeFile(const char *, const char *);
 void base64DecodeFile(const char *, const char *);
-
-#endif

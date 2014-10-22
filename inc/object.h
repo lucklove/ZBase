@@ -1,5 +1,4 @@
-#ifndef OBJECT_H
-#define OBJECT_H
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,5 +43,3 @@ void	destroyObject(ObjectPtr);
 void	setInt(ObjectPtr, int);
 void	setChar(ObjectPtr, char);
 void	setStr(ObjectPtr, char *);
-
-#endif
