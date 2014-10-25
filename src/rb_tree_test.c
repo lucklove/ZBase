@@ -66,20 +66,11 @@ main(int argc, char *argv[]){
 //     	RBTree t = makeRBTree(getKey, cmpKey, makeNode, swapKey, freeNode);
      	RBTree t = makeRBTree(getKey, cmpKey, makeNode, swapKey, freeNode);
 	rbInsert(&t, "hello");
-	rbInsert(&t, "wawa");
-	rbInsert(&t, "nini");
-	rbInsert(&t, "wowo");
-	rbInsert(&t, "cao");
-	rbInsert(&t, "nima");
-	rbInsert(&t, "hello");
+	rbInsert(&t, "haha");
      	rbDelete(&t, "hello");
-//     	rbDelete(&t, "hello");
+     	rbDelete(&t, "haha");
      	show_rb_tree(t.root);
-     	struct RBNode *node = rbSearch(t, "hello");
-     	if(node != NULL) {
-     		printf("found\n");
-        	printf("key:%s\n", container_of(node, struct MyNode, node)->key);
-     	}
+     	printf("root %p\n", t.root);
 	destroyRBTree(t);
         return 0;
 }

@@ -7,16 +7,16 @@
 #include <stdbool.h>
 #include <assert.h>
 
-static struct JsonPair soakPair(const char *);
-static mem_t soakJson(const char *);
-static mem_t soakPairs(const char *);
-static mem_t soakPairList(const char *);
-static mem_t soakString(const char *);
+static struct JsonPair soakPair(const char **);
+static mem_t soakJson(const char **);
+static mem_t soakPairs(const char **);
+static mem_t soakPairList(const char **);
+static mem_t soakString(const char **);
 
 #define MAX_ERROR_OFFSET 20
 
 //static int json_error;
-static const char*string_start;			//for out put error msg
+static const char *string_start;			//for out put error msg
 
 static const char *
 find_error_line_start(const char *error_point, unsigned int *line_count)
@@ -53,7 +53,7 @@ point_error(const char *error_point)
 		line_start = error_point - MAX_ERROR_OFFSET;
 	if(line_end - error_point > MAX_ERROR_OFFSET)
 		line_end = error_point + MAX_ERROR_OFFSET;
-//	printf("on line %d:\n", line_num);
+	printf("on line %d:\n", line_num);
 	fwrite(line_start, line_end - line_start, 1, stdout);
 	printf("\n");
 	for(int i = 0; i < error_point - line_start; i++)
@@ -61,201 +61,242 @@ point_error(const char *error_point)
 	printf("^\n");
 	return;
 }
- 	
-static bool
-check_num(const char *string)
-{
-	while(*string != ' ' && *string != '}') {
-		if(*string > '9' || *string < '0') {
-			return false;
-		}
-		++string;
-	}
-	return true;
-}
 
-static const char *
-find_pair(const char *string, char left, char right)
+static bool check_num(const char *str)
 {
-	int left_count = 1;
-	assert(*string == left);
-	while(*string != '\0' && left_count != 0) {
-		++string;
-		if(*string == left)
-			++left_count;
-		if(*string == right)
-			--left_count;
-	}
-	if(left_count != 0) {
-		printf("JSON ERROR: unexpect end.\n");
-		point_error(string);
-		return NULL;
-	}
-	return string;
+    int checkE = 0;
+    int i = 0;
+    int Have_number = 0;
+    int checkPoint = 0;
+    while(str[i]!='}'&&str[i]!=' ')
+    {
+        if(str[i]>='0'&&str[i]<='9')
+        {
+            Have_number = 1;
+            i++;
+        } else if(str[i]=='E'||str[i]=='e') {
+            if(str[i+1]!='}'&&str[i+1]!=' ')  //E和e只能出现在数字后，并且只能出现一次
+            {
+                if(Have_number==1&&checkE==0)
+                {
+                    if(str[i+1]=='.')
+                    return false;
+                    i++;
+                    checkE++;
+                }
+                else
+                    return false ;
+            }
+            else
+                return false;
+        }
+        else if(str[i]=='.')
+        {
+            if(checkPoint==1&&Have_number==1)
+            {
+                i++;
+            }
+            else if(checkPoint==0)
+            {
+                checkPoint++;
+                i++;
+            }
+            else
+                return false;
+        }
+else return false;
+    }
+    if(Have_number==0||str[i-1]=='.')
+        return false;
+    else
+        return true;
 }
 
 static mem_t
-soakString(const char *string)
+soakString(const char **string)
 {
-	assert(*string == '\"');
-	++string;
-	const char *tmp = strchr(string, '\"');
+	assert(**string == '\"');
+	++(*string);
+	const char *tmp = strchr(*string, '\"');
 	if(tmp == NULL) {
 		printf("JSON ERROR:expect another '\"':\n");
-		point_error(string);
+		point_error(*string);
+		exit(-1);
 		return makeMem(0);
 	}
-	mem_t retval = makeMem(tmp - string + 1);
-	memCpy(&retval, string, tmp - string);
+	mem_t retval = makeMem(tmp - *string + 1);
+	memCpy(&retval, *string, tmp - *string);
+	*string = ++tmp;
 	return retval;
 }
 	
 static struct JsonPair
-soakPair(const char *string)
+soakPair(const char **string)
 {
-	const char *tmp = string;
-	while(*(++tmp) == ' ');
+	const char *tmp = *string;
+	while(*(++tmp) == ' ' || *tmp == '\n' || *tmp == '\t');
 	if(*tmp == '}')
 		return (struct JsonPair){ makeMem(0), makeMem(0), JSON_NONE };
 	struct JsonPair pair;
-	while(*(++string) == ' ');
-	if(*string != '\"') {
+	while(*(++(*string)) == ' ' || **string == '\n' || **string == '\t');
+	if(**string != '\"') {
 		printf("JSON ERROR:expect '\"':\n");
-		point_error(string);
+		point_error(*string);
+		exit(-1);
 		return (struct JsonPair){ makeMem(0), makeMem(0), JSON_NONE };
 	}
 	pair.key = soakString(string);
 	if(getMemIndex(pair.key) == 0) 
 		return (struct JsonPair){ makeMem(0), makeMem(0), JSON_NONE };
-	string = strchr(++string, '\"');
-	assert(string != NULL);
-	while(*(++string) == ' ');
-	if(*string != ':') {
+	while((**string) == ' ' || **string == '\n' || **string == '\t') ++(*string);
+	if(**string != ':') {
 		printf("JSON ERROR:expect ':'\n");
-		point_error(string);
+		point_error(*string);
+		exit(-1);
 		return (struct JsonPair){ makeMem(0), makeMem(0), JSON_NONE };
 	}
-	while(*(++string) == ' ');
-	if(*string == '[') {
+	while(*(++(*string)) == ' ' || **string == '\n' || **string == '\t');
+	if(**string == '[') {
 		pair.val = soakJson(string);
 		pair.type = JSON_ARRAY;
-	} else if(*string == '{') {
+	} else if(**string == '{') {
 		pair.val = soakJson(string);
 		pair.type = JSON_PAIR;
-	} else if(*string == '\"') {
+	} else if(**string == '\"') {
 		pair.val = soakString(string);
 		pair.type = JSON_STRING;
-	} else if(strncmp(string, "true", 4) == 0 
-		&& (string[4] == ' ' || string[4] == '}'))  {
+	} else if(strncmp(*string, "true", 4) == 0 
+		&& ((*string)[4] == ' ' || (*string)[4] == '}'))  {
 		pair.val = makeMem(5);
-		memCpy(&pair.val, string, 4);
+		memCpy(&pair.val, *string, 4);
+		*string += 4;
 		pair.type = JSON_BOOL;
-	} else if(strncmp(string, "false", 5) == 0 
-		&& (string[5] == ' ' || string[5] == '}'))  {
+	} else if(strncmp(*string, "false", 5) == 0 
+		&& ((*string)[5] == ' ' || (*string)[5] == '}'))  {
 		pair.val = makeMem(6);
-		memCpy(&pair.val, string, 5);
+		memCpy(&pair.val, *string, 5);
+		*string += 5;
 		pair.type = JSON_BOOL;
-	} else if(strncmp(string, "null", 4) == 0
-		&& (string[4] == ' ' || string[4] == '}'))  {
+	} else if(strncmp(*string, "null", 4) == 0
+		&& ((*string)[4] == ' ' || (*string)[4] == '}'))  {
 		pair.val = makeMem(5);
-		memCpy(&pair.val, string, 4);
+		memCpy(&pair.val, *string, 4);
+		*string += 4;
 		pair.type = JSON_NONE;
-	} else if(check_num(string)) {
-		tmp = string;
-		while(*tmp != ' ' && *tmp != '}') ++tmp;
-		pair.val = makeMem(tmp - string + 1);
-		memCpy(&pair.val, string, tmp - string);
+	} else if(check_num(*string)) {
+		tmp = *string;
+		while(*tmp != ' ' && *tmp != '}' && *tmp != '\n' && *tmp != '\t') ++tmp;
+		pair.val = makeMem(tmp - *string + 1);
+		memCpy(&pair.val, *string, tmp - *string);
+		*string = tmp;
 		pair.type = JSON_NUMBER;
 	} else {
-		printf("JSON ERROR:unexpect '%c'\n", *string);
-		point_error(string);
+		printf("JSON ERROR: expect '[' or '{' or '\"' or true or false or null or NUMBER\n");
+		point_error(*string);
+		exit(-1);
 		return (struct JsonPair){ makeMem(0), makeMem(0), JSON_NONE };
+	}
+	while(**string == ' ' || **string == '\n' || **string == '\t') ++(*string);
+	if(**string != '}') {
+		printf("JSON ERROR: expect '}'\n");
+		point_error(*string);
+		exit(-1);
 	}
 	return pair;
 }
 
 
 static mem_t
-soakPairList(const char *string)
+soakPairList(const char **string)
 {
 	int have_pair = true;
 	mem_t retval = makeMem(sizeof(struct JsonPair));
 	while(have_pair) {
-		while(*string == ' ')
-			++string;
-		if(*string != '{') {
+		while(**string == ' ' || **string == '\n' || **string == '\t')
+			++(*string);
+		if(**string != '{') {
 			printf("JSON ERROR: expect '{'\n");
-			point_error(string);
+			point_error(*string);
+			exit(-1);
 			return makeMem(0);
 		}
 		SET_TYPE_MEM(&retval, struct JsonPair, GET_ITEM_NUM(retval, struct JsonPair), soakPair(string));
-		if((string = find_pair(string, '{', '}')) == NULL)
-			return makeMem(0);
-		++string;
-		while(*string == ' ') ++string;
-		if(*string == ']') {
+		++(*string);
+		while(**string == ' ' || **string == '\n' || **string == '\t') ++(*string);
+		if(**string == ']') {
 			have_pair = false;
-		} else if(*string == ',') {
-			++string;
+		} else if(**string == ',') {
+			++(*string);
 			continue;
 		} else {
-			printf("JSON ERROR: unexpect '%c'\n", *string);
-			point_error(string);
+			printf("JSON ERROR: expect '] or ','");
+			point_error(*string);
+			exit(-1);
 			return makeMem(0);
 		}
 	}
+	++(*string);
 	return retval;
 }
 		
 static mem_t
-soakPairs(const char *string)
+soakPairs(const char **string)
 {
-	const char *tmp = string;
-	while(*(++tmp) == ' ');
+	const char *tmp = *string;
+	while(*(++tmp) == ' ' || *tmp == '\n' || *tmp == '\t');
 	if(*tmp == ']')
 		return makeMem(0);
-	++string;
+	++(*string);
 	return soakPairList(string);
 }
 
 static mem_t
-soakJson(const char *string)
+soakJson(const char **string)
 {
-	while(*string == ' ' && *string != '\0')
-		string++;
-	if(*string == '\0') {
+	while(**string == ' ' || **string == '\n' || **string == '\t')
+		++(*string);
+	if(**string == '\0') {
 		printf("JSON ERROR: unexpect end.\n");
-		point_error(string);
+		point_error(*string);
+		exit(-1);
 	}
-	if(*string == '[') {
+	if(**string == '[') {
 		return soakPairs(string);
-	} else if(*string == '{') {
+	} else if(**string == '{') {
 		mem_t retval = makeMem(sizeof(struct JsonPair));
 		struct JsonPair pair = soakPair(string);
 		SET_TYPE_MEM(&retval, struct JsonPair, 0, pair);
 		return retval;
 	} 
-	printf("JSON ERROR: expect '{' or '[':\n");
-	point_error(string);
+	printf("JSON ERROR: expect '{' or '['\n");
+	exit(-1);
+	point_error(*string);
 	return makeMem(0);
 }
 	
 json_t
-makeJson(const char *string)
+makeJson(const char *key, const char *val)
 {
-	string_start = string;
-	while(*(string) == ' ') ++string;
-	if(*string == '{') {
-		return (json_t){ makeMem(0), soakJson(string), JSON_PAIR };
-	} else if(*string == '[') {
-		return (json_t){ makeMem(0), soakJson(string), JSON_ARRAY };
+	string_start = val;
+	mem_t key_mem;
+	if(key != NULL) {
+		key_mem = makeMem(strlen(key));
+		memCpy(&key_mem, key, strlen(key));
 	} else {
-		return (json_t){ makeMem(0), makeMem(0), JSON_NONE };
+		key_mem = makeMem(0);
+	}
+	while(*(val) == ' ' || *val == '\n' || *val == '\t') ++val;
+	if(*val == '{') {
+		return (json_t){ key_mem, soakJson(&val), JSON_PAIR };
+	} else if(*val == '[') {
+		return (json_t){ key_mem, soakJson(&val), JSON_ARRAY };
+	} else {
+		return (json_t){ key_mem, makeMem(0), JSON_NONE };
 	}
 }
 
 static void
-dumpVal(struct JsonPair *p)
+dumpVal(struct JsonPair *p, FILE *file)
 {
 	printf("{");
 	switch(p->type) {
@@ -263,45 +304,92 @@ dumpVal(struct JsonPair *p)
 			break;
 		case JSON_NUMBER:
 		case JSON_BOOL:
-			printf("\"%s\":%s", (char *)getMemPtr(&p->key, 0, 0), (char *)getMemPtr(&p->val, 0, 0));
+			fprintf(file, "\"%s\":%s", (char *)getMemPtr(&p->key, 0, 0), (char *)getMemPtr(&p->val, 0, 0));
 			break;
 		case JSON_STRING:
-			printf("\"%s\":\"%s\"", (char *)getMemPtr(&p->key, 0, 0), (char *)getMemPtr(&p->val, 0, 0));
+			fprintf(file, "\"%s\":\"%s\"", (char *)getMemPtr(&p->key, 0, 0), (char *)getMemPtr(&p->val, 0, 0));
 			break;
 		case JSON_ARRAY:
-			printf("\"%s\":", (char *)getMemPtr(&p->key, 0, 0));
-			printf("[");
+			fprintf(file, "\"%s\":", (char *)getMemPtr(&p->key, 0, 0));
+			fprintf(file, "[");
 			for(int i = 0; i < GET_ITEM_NUM(p->val, struct JsonPair); i++) {
-				dumpVal(GET_TYPE_MEM(&p->val, struct JsonPair, i));
+				dumpVal(GET_TYPE_MEM(&p->val, struct JsonPair, i), file);
 				if(i != GET_ITEM_NUM(p->val, struct JsonPair) - 1)
-					printf(",");
+					fprintf(file, ",");
 			}
-			printf("]");
+			fprintf(file, "]");
 			break;
 		case JSON_PAIR:
-			printf("\"%s\":", (char *)getMemPtr(&p->key, 0, 0));
-			printf("{");
-			dumpVal(GET_TYPE_MEM(&p->val, struct JsonPair, 0));
-			printf("}");
+			fprintf(file, "\"%s\":", (char *)getMemPtr(&p->key, 0, 0));
+			fprintf(file, "{");
+			dumpVal(GET_TYPE_MEM(&p->val, struct JsonPair, 0), file);
+			fprintf(file, "}");
 			break;
 		default:
-			printf("error");
+			fprintf(file, "error");
 			break;
 	}
-	printf("}");
+	fprintf(file, "}");
 }
 
 void
-dumpJson(json_t json)
+jsonDump(json_t json, FILE *file)
 {
 	if(json.type == JSON_ARRAY)
-		printf("[");
+		fprintf(file, "[");
 	for(int i = 0; i < GET_ITEM_NUM(json.val, struct JsonPair); i++) {
-		dumpVal(GET_TYPE_MEM(&json.val, struct JsonPair, i));
+		dumpVal(GET_TYPE_MEM(&json.val, struct JsonPair, i), file);
 		if(i != GET_ITEM_NUM(json.val, struct JsonPair) - 1)
-			printf(",");
+			fprintf(file, ",");
 	}
 	if(json.type == JSON_ARRAY)
-		printf("]");
-	printf("\n");
+		fprintf(file, "]");
+	fprintf(file, "\n");
+}
+
+json_t
+jsonLoad(FILE *file)
+{
+	char ch;
+	mem_t mem = makeMem(256);
+	while((ch = getc(file)) != EOF)
+		SET_TYPE_MEM(&mem, char, GET_ITEM_NUM(mem, char), ch);
+	SET_TYPE_MEM(&mem, char, GET_ITEM_NUM(mem, char), '\0');
+	json_t ret = makeJson(NULL, getMemPtr(&mem, 0, 0));
+	destroyMem(mem);
+	return ret;
+}
+
+enum JsonType
+jsonGetType(json_t json)
+{
+	return json.type;
+}
+
+const char *
+jsonGetContent(json_t json)
+{
+	return getMemPtr(&json.val, 0, 0);
+}
+
+json_t
+jsonGetVal(json_t json, unsigned int index)
+{
+	return *(GET_TYPE_MEM(&json.val, json_t, index));
+}
+
+unsigned int
+jsonGetArrayLen(json_t json)
+{
+	if(jsonGetType(json) != JSON_ARRAY)
+		return 0;
+	return GET_ITEM_NUM(json.val, json_t);
+}
+
+const char *
+jsonGetKey(json_t json)
+{
+	if(getMemIndex(json.key) == 0)
+		return NULL;
+	return getMemPtr(&json.key, 0, 0);
 }

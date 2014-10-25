@@ -2,9 +2,9 @@
 
 #include <stdatomic.h>
 
-typedef struct {
+typedef struct RefNode {
 	_Atomic(int) count;
-	void (*releaseFunc)(void *);
+	void (*releaseFunc)(struct RefNode *);
 } ref_t;
 
 ref_t makeRef(void (*)(ref_t *));

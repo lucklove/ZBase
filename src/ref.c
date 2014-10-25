@@ -1,7 +1,7 @@
 #include "ref.h"
 
 ref_t
-makeRef(void (*releaseFunc)(void *))
+makeRef(void (*releaseFunc)(ref_t *))
 {
 	return (ref_t) { 1, releaseFunc };
 }

@@ -51,7 +51,7 @@ main(int argc, char *argv[])
 		GET_TYPE_MEM(&mem1, struct MyStruct, 5)->c,
 		GET_TYPE_MEM(&mem1, struct MyStruct, 5)->cp,
 		GET_TYPE_MEM(&mem1, struct MyStruct, 5));
-	destroyMem(mem);
+//	destroyMem(mem);
 	destroyMem(mem1);
 	return 0;
 }

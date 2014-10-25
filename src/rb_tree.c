@@ -17,6 +17,8 @@ makeRBTree(void *(*getKey)(struct RBNode *), int (*cmpKey)(void *, void *),
 static void
 destroyTree(struct RBNode *tree, void (*freeFunc)(struct RBNode *))
 {
+	if(tree == NULL)
+		return;
 	if(tree->lchild != NULL)
 		destroyTree(tree->lchild, freeFunc);
 	if(tree->rchild != NULL)
@@ -166,9 +168,8 @@ rbDelete(RBTreePtr tree_ptr, void *key)
  	u = v;
 	if(v->lchild != NULL && v->rchild != NULL){
      		u = v->rchild;
-     		while(u->lchild != NULL){
+     		while(u->lchild != NULL)
          		u = u->lchild;
-     		}
      		tree_ptr->swapKey(u, v);
      	}
      	//u is the node to free.
@@ -188,6 +189,8 @@ rbDelete(RBTreePtr tree_ptr, void *key)
      	} else {
      		//u is root.
      		tree_ptr->root = c;
+		if(tree_ptr->root != NULL)
+			tree_ptr->root->parent = NULL;
 		if(tree_ptr->freeNode != NULL)
      			tree_ptr->freeNode(u);
      		return;

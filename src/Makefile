@@ -2,11 +2,11 @@ CC = gcc
 RM = rm
 CFLAGS = -O -Wall -std=c11 -I../inc -ltcmalloc
 
-MEM_TEST_OBJS = mem.o mem_test.o
+MEM_TEST_OBJS = mem.o mem_test.o rb_tree.o
 
 COMPRESS_TEST_OBJS = compress.o compress_test.o quicksort.o hm_tree.o
 
-BITS_TEST_OBJS = bits_test.o
+BITS_TEST_OBJS = bits_test.o bits.o
 
 RB_TEST_OBJS = rb_tree.o rb_tree_test.o
 
