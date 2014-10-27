@@ -5,6 +5,7 @@
 int
 main(int argc, char *argv[])
 {
+	memDebugInit();
 	FILE *fp = fopen("json.txt", "r");
 	json_t json = jsonLoad(fp);
 	printf("-----------------------------------\n");
@@ -19,5 +20,7 @@ main(int argc, char *argv[])
 			printf("content:%s\n", jsonGetContent(j));
 		}
 	}
+	memCheckLeak(stdout);
+	memDebugRelease();
 	return 0;
 }

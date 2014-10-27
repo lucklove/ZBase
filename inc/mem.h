@@ -25,6 +25,12 @@ void memDebugInit(void);
 void memCheckLeak(FILE *);
 void memDebugRelease(void);
 
+#else
+
+#define memDebugInit()
+#define memCheckLeak(f)
+#define memDebugRelease()
+
 #endif
 
 #define GET_ITEM_NUM(mem_t, item_type) (getMemIndex(mem_t) / (unsigned int)sizeof(item_type))

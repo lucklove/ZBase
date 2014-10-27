@@ -68,6 +68,59 @@ static bool check_num(const char *str)
     int i = 0;
     int Have_number = 0;
     int checkPoint = 0;
+    while(str[i]!='}'&&str[i]!=' '&&str[i]!='\n'&&str[i]!='\0')
+    {
+        if(str[i]>='0'&&str[i]<='9')
+        {
+            Have_number = 1;
+            i++;
+        }
+        else if(str[i]=='E'||str[i]=='e')
+        {
+            if(str[i+1]!='}'&&str[i+1]!=' ')  //E和e只能出现在数字后，并且只能出现一次
+            {
+                if(Have_number==1&&checkE==0)
+                {
+                    if(str[i+1]=='.')
+                    return false;
+                    i++;
+                    checkE++;
+                }
+                else
+                    return false ;
+            }
+            else
+                return false;
+        }
+        else if(str[i]=='.')
+        {
+            if(checkPoint==1&&Have_number==1)
+            {
+                i++;
+            }
+            else if(checkPoint==0)
+            {
+                checkPoint++;
+                i++;
+            }
+            else
+                return false;
+        }
+else return false;
+    }
+    if(Have_number==0||str[i-1]=='.')
+        return false;
+    else
+        return true;
+}
+
+/*
+static bool check_num(const char *str)
+{
+    int checkE = 0;
+    int i = 0;
+    int Have_number = 0;
+    int checkPoint = 0;
     while(str[i]!='}'&&str[i]!=' ')
     {
         if(str[i]>='0'&&str[i]<='9')
@@ -111,7 +164,7 @@ else return false;
     else
         return true;
 }
-
+*/
 static mem_t
 soakString(const char **string)
 {
