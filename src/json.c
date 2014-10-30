@@ -62,27 +62,27 @@ point_error(const char *error_point)
 	return;
 }
 
-static bool check_num(const char *str)
+static bool 
+check_num(const char *str)
 {
     int checkE = 0;
     int i = 0;
     int Have_number = 0;
     int checkPoint = 0;
-    while(str[i]!='}'&&str[i]!=' '&&str[i]!='\n'&&str[i]!='\0')
-    {
-        if(str[i]>='0'&&str[i]<='9')
-        {
+    int Length=strlen(str);
+    int checkSymbol = 0;  //检查+和-
+    while(str[i] !='}'&&str[i] !=' '&&str[i] !='\n'&&str[i] !='\0') {
+        if(str[i] >='0'&&str[i] <='9') {
             Have_number = 1;
             i++;
         }
-        else if(str[i]=='E'||str[i]=='e')
-        {
-            if(str[i+1]!='}'&&str[i+1]!=' ')  //E和e只能出现在数字后，并且只能出现一次
+        else if(str[i] =='E'||str[i] =='e') {
+            if(str[i+1]!='}'&&str[i+1]!=' '&&i!=Length-1) //E和e只能出现在数字后，并且只能出现一次
             {
                 if(Have_number==1&&checkE==0)
                 {
                     if(str[i+1]=='.')
-                    return false;
+                        return false;
                     i++;
                     checkE++;
                 }
@@ -92,8 +92,10 @@ static bool check_num(const char *str)
             else
                 return false;
         }
-        else if(str[i]=='.')
+        else if(str[i] =='.')
         {
+            if(checkE>0||checkSymbol>0)
+                return false;
             if(checkPoint==1&&Have_number==1)
             {
                 i++;
@@ -106,65 +108,26 @@ static bool check_num(const char *str)
             else
                 return false;
         }
-else return false;
+        else if(str[i] =='-'||str[i] =='+')
+        {
+            if(checkSymbol>0)
+                return false;
+            if(checkE>0&&Have_number>0)
+            {
+                checkSymbol++;
+                i++;
+            }
+        }
+        else
+            return false;
     }
+
     if(Have_number==0||str[i-1]=='.')
         return false;
     else
         return true;
 }
 
-/*
-static bool check_num(const char *str)
-{
-    int checkE = 0;
-    int i = 0;
-    int Have_number = 0;
-    int checkPoint = 0;
-    while(str[i]!='}'&&str[i]!=' ')
-    {
-        if(str[i]>='0'&&str[i]<='9')
-        {
-            Have_number = 1;
-            i++;
-        } else if(str[i]=='E'||str[i]=='e') {
-            if(str[i+1]!='}'&&str[i+1]!=' ')  //E和e只能出现在数字后，并且只能出现一次
-            {
-                if(Have_number==1&&checkE==0)
-                {
-                    if(str[i+1]=='.')
-                    return false;
-                    i++;
-                    checkE++;
-                }
-                else
-                    return false ;
-            }
-            else
-                return false;
-        }
-        else if(str[i]=='.')
-        {
-            if(checkPoint==1&&Have_number==1)
-            {
-                i++;
-            }
-            else if(checkPoint==0)
-            {
-                checkPoint++;
-                i++;
-            }
-            else
-                return false;
-        }
-else return false;
-    }
-    if(Have_number==0||str[i-1]=='.')
-        return false;
-    else
-        return true;
-}
-*/
 static mem_t
 soakString(const char **string)
 {
@@ -250,11 +213,13 @@ soakPair(const char **string)
 		return (struct JsonPair){ makeMem(0), makeMem(0), JSON_NONE };
 	}
 	while(**string == ' ' || **string == '\n' || **string == '\t') ++(*string);
+	point_error(*string);
 	if(**string != '}') {
 		printf("JSON ERROR: expect '}'\n");
 		point_error(*string);
 		exit(-1);
 	}
+	++(*string);
 	return pair;
 }
 
@@ -273,8 +238,7 @@ soakPairList(const char **string)
 			exit(-1);
 			return makeMem(0);
 		}
-		SET_TYPE_MEM(&retval, struct JsonPair, GET_ITEM_NUM(retval, struct JsonPair), soakPair(string));
-		++(*string);
+		ADD_ITEM(&retval, struct JsonPair, soakPair(string));
 		while(**string == ' ' || **string == '\n' || **string == '\t') ++(*string);
 		if(**string == ']') {
 			have_pair = false;
@@ -374,9 +338,7 @@ dumpVal(struct JsonPair *p, FILE *file)
 			break;
 		case JSON_PAIR:
 			fprintf(file, "\"%s\":", (char *)getMemPtr(&p->key, 0, 0));
-			fprintf(file, "{");
 			dumpVal(GET_TYPE_MEM(&p->val, struct JsonPair, 0), file);
-			fprintf(file, "}");
 			break;
 		default:
 			fprintf(file, "error");
@@ -406,8 +368,8 @@ jsonLoad(FILE *file)
 	char ch;
 	mem_t mem = makeMem(256);
 	while((ch = getc(file)) != EOF)
-		SET_TYPE_MEM(&mem, char, GET_ITEM_NUM(mem, char), ch);
-	SET_TYPE_MEM(&mem, char, GET_ITEM_NUM(mem, char), '\0');
+		ADD_ITEM(&mem, char, ch);
+	ADD_ITEM(&mem, char, '\0');
 	json_t ret = makeJson(NULL, getMemPtr(&mem, 0, 0));
 	destroyMem(mem);
 	return ret;

@@ -1,5 +1,7 @@
 #include "rb_tree.h"
+
 #define NULL ((void *)0)
+
 typedef enum {
 	RED = 0,
 	BLACK = 1

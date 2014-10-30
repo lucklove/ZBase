@@ -1,6 +1,6 @@
-CC = gcc
+CC = clang
 RM = rm
-CFLAGS = -O -Wall -std=c11 -I../inc -ltcmalloc
+CFLAGS = -Wall -std=c11 -I../inc -ltcmalloc
 
 MEM_TEST_OBJS = mem.o mem_test.o rb_tree.o
 
@@ -24,10 +24,20 @@ REF_TEST_OBJS = ref.o ref_test.o
 
 OPT_TEST_OBJS = opt_test.o
 
+ZOBJ_TEST_OBJS = zobject.o zobj_test.o mem.o rb_tree.o
+
+MATRIX_TEST_OBJS = matrix.o matrix_test.o mem.o
+
 .c.o:
 	$(CC) -c $(CFLAGS) $*.c
 
-all: compress_test bits_test rb_test hm_test base64_test random_test fsm_test mem_test json_test ref_test opt_test
+all: compress_test bits_test rb_test hm_test base64_test random_test fsm_test mem_test json_test ref_test opt_test matrix_test zobj_test
+
+matrix_test: $(MATRIX_TEST_OBJS)
+	$(CC) $(CFLAGS) -o $@ $(MATRIX_TEST_OBJS)
+
+zobj_test: $(ZOBJ_TEST_OBJS)
+	$(CC) $(CFLAGS) -o $@ $(ZOBJ_TEST_OBJS)
 
 opt_test: $(OPT_TEST_OBJS)
 	$(CC) $(CFLAGS) -o $@ $(OPT_TEST_OBJS)
@@ -66,4 +76,4 @@ hm_test: $(HM_TEST_OBJS)
 	$(CC) $(CLFAGS) -o $@ $(HM_TEST_OBJS)
 
 clean:
-	$(RM) -f *.o compress_test bits_test rb_test hm_test base64_test mem_test fsm_test json_test random_test ref_test opt_test
+	$(RM) -f *.o compress_test bits_test rb_test hm_test base64_test mem_test fsm_test json_test random_test ref_test opt_test zobj_test matrix_test

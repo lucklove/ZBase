@@ -35,7 +35,12 @@ void memDebugRelease(void);
 
 #define GET_ITEM_NUM(mem_t, item_type) (getMemIndex(mem_t) / (unsigned int)sizeof(item_type))
 
+#define  ADD_ITEM(mem_t_ptr, type, val) 	\
+	SET_TYPE_MEM(mem_t_ptr, type, GET_ITEM_NUM(*(mem_t_ptr), type), val)
+
 #define GET_TYPE_MEM(mem_t_ptr, type, _index) ((type *)getMemPtr((mem_t_ptr), sizeof(type) * (_index), sizeof(type)))
+
+#define GET_TYPE_ITEM(mem_t_ptr, type, _index) (*(GET_TYPE_MEM(mem_t_ptr, type, _index)))
 
 #define SET_TYPE_MEM(mem_t_ptr, type, _index, val)				\
 do {										\

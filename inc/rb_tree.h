@@ -18,7 +18,7 @@ void		rbInsert(RBTreePtr, void *);
 void		rbDelete(RBTreePtr, void *);
 struct RBNode*	rbSearch(RBTree, void *);
 
-struct RBNode* getRBRoot(RBTree);
+struct RBNode* rbGetRoot(RBTree);
 
 RBTree 	makeRBTree(void *(*)(struct RBNode *), int (*)(void *, void *),		\
 	struct RBNode *(*)(void *key),						\

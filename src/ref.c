@@ -9,7 +9,7 @@ makeRef(void (*releaseFunc)(ref_t *))
 int
 refGet(ref_t *ref)
 {
-	atomic_fetch_add(&ref->count, 1);
+	__atomic_fetch_add(&ref->count, 1);
 	return ref->count;
 }
 

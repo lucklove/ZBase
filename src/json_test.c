@@ -17,7 +17,6 @@ main(int argc, char *argv[])
 			json_t j = jsonGetVal(json, i);
 			printf("type = %d\n", jsonGetType(j));
 			printf("key = %s\n", jsonGetKey(j));
-			printf("content:%s\n", jsonGetContent(j));
 		}
 	}
 	memCheckLeak(stdout);
