@@ -76,7 +76,7 @@ rollLeft(struct CompressBall *ball)
 		return;
 	if(ball->index == ball->bit_len)
 		chargeBall(ball);
-	BITS_CLR(ball->data, ball->index);
+	bits_clr(ball->data, ball->index);
 	++ball->index;
 }
 
@@ -87,7 +87,7 @@ rollRight(struct CompressBall *ball)
 		return;
 	if(ball->index == ball->bit_len)
 		chargeBall(ball);
-	BITS_SET(ball->data, ball->index);
+	bits_set(ball->data, ball->index);
 	++ball->index;
 }
 	
@@ -234,7 +234,7 @@ compressDecode(compress_t session)
 			data = realloc(data, data_size);
 			assert(data != NULL);
 		}
-		if(BITS_TEST(session.data, i)) {
+		if(bits_test(session.data, i)) {
 			assert(node->right != NULL);
 			node = node->right;
 		} else {
