@@ -28,7 +28,7 @@ ZOBJ_TEST_OBJS = zobject.o zobj_test.o mem.o rb_tree.o
 
 MATRIX_TEST_OBJS = matrix.o matrix_test.o mem.o
 
-SORT_TEST_OBJS = sort_test.o quicksort.o stacksort.o
+SORT_TEST_OBJS = sort_test.o sort.o
 
 .c.o:
 	$(CC) -c $(CFLAGS) $*.c

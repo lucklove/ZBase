@@ -1,6 +1,5 @@
 #include <stdio.h>
-#include "quicksort.h"
-#include "stacksort.h"
+#include "sort.h"
 
 static int
 cmp(const void *a, const void *b)
