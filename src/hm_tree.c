@@ -1,6 +1,6 @@
 //Huffman tree
 #include "hm_tree.h"
-#include "quicksort.h"
+#include "sort.h"
 #include <assert.h>
 
 #ifndef NULL

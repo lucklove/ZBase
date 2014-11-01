@@ -4,19 +4,19 @@
 void
 bits_set(void *ptr, unsigned int index)
 {
-	BITS_SET(ptr, index);
+        ((char *)(ptr))[(index)/8] |= (0x01 << ((index)%8));
 }
 
 void
 bits_clr(void *ptr, unsigned int index)
 {
-	BITS_CLR(ptr, index);
+        ((char *)(ptr))[(index)/8] &= ~(0x01 << ((index)%8));
 }
 
 int
 bits_test(void *ptr, unsigned int index)
 {
-	return BITS_TEST(ptr, index);
+        return (((char *)(ptr))[(index)/8] >> ((index)%8)) & 0x01;
 }
 
 void
