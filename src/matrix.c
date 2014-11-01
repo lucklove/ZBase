@@ -80,6 +80,43 @@ matrixDelCol(matrix_t *matrix, unsigned int col_num)
 	--matrix->col;
 }
 
+matrix_t
+matrixMult(matrix_t m1, matrix_t m2)
+{
+	matrix_t ret = makeMatrix(matrixGetRow(m1), matrixGetCol(m2), NULL);
+	for(int i = 0; i < matrixGetRow(m1); ++i) {
+		for(int j = 0; j < matrixGetCol(m2); ++j) {
+			double sum = 0.0;
+			for(int k = 0; k < matrixGetCol(m1); ++k) 
+				sum += matrixGet(m1, i, k) * matrixGet(m2, k, j);
+			matrixSet(&ret, i, j, sum);
+		}
+	}
+	return ret;
+}
+
+matrix_t
+matrixMultNum(matrix_t m, double num)
+{
+	matrix_t ret = makeMatrix(matrixGetRow(m), matrixGetCol(m), NULL);
+	for(int i = 0; i < matrixGetRow(m); ++i) {
+		for(int j = 0; j < matrixGetCol(m); ++j)
+			matrixSet(&ret, i, j, matrixGet(m, i, j) * num);
+	}
+	return ret;
+}
+
+matrix_t
+matrixMinus(matrix_t m1, matrix_t m2)
+{
+	matrix_t ret = makeMatrix(matrixGetRow(m1), matrixGetCol(m2), NULL);
+	for(int i = 0; i < matrixGetRow(m1); ++i) {
+		for(int j = 0; j < matrixGetCol(m1); ++j)
+			matrixSet(&ret, i, j, matrixGet(m1, i, j) - matrixGet(m2, i, j));
+	}
+	return ret;
+}
+
 void
 dumpMatrix(matrix_t matrix)
 {

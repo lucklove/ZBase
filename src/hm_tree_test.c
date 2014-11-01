@@ -10,7 +10,7 @@ struct MyNode {
 };
 
 int
-cmp_func(void *p1, void *p2)
+cmp_func(const void *p1, const void *p2)
 {
 	struct HMNode **node1 = (struct HMNode **)p1;
 	struct HMNode **node2 = (struct HMNode **)p2;

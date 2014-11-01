@@ -2,7 +2,7 @@
 #include <string.h>
 
 void
-quickSort(void *data, unsigned int size, unsigned int num, int (*cmp_func)(void *, void *))
+quickSort(void *data, unsigned int size, unsigned int num, int (*cmp_func)(const void *, const void *))
 {
 	char key[size];
 	if(num < 2)

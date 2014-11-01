@@ -18,3 +18,5 @@ void dumpMatrix(matrix_t);
 matrix_t matrixScale(matrix_t);
 void matrixDelRow(matrix_t *, unsigned int);
 void matrixDelCol(matrix_t *, unsigned int);
+matrix_t matrixMult(matrix_t, matrix_t);
+matrix_t matrixMultNum(matrix_t, double);

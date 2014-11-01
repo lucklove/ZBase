@@ -6,7 +6,7 @@ struct HMNode {
 };
 
 typedef struct {
-	int (*cmpHMNode)(void *, void *);
+	int (*cmpHMNode)(const void *, const void *);
 	struct HMNode *(*mergeHMTree)(struct HMNode *, struct HMNode *);
 	struct HMNode **seeds;
 	unsigned int seed_num;
@@ -16,7 +16,7 @@ typedef struct {
 	struct HMNode *root;
 } HMTree, *HMTreePtr;
 
-HMSeed makeHMSeed(struct HMNode **, unsigned int, int (*)(void *, void *), 
+HMSeed makeHMSeed(struct HMNode **, unsigned int, int (*)(const void *, const void *), 
 	struct HMNode *(*)(struct HMNode *, struct HMNode *));
 HMTree makeHMTree(HMSeed);
 void destroyHMTree(HMTree, void (*)(struct HMNode *));

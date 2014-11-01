@@ -1,4 +1,4 @@
-CC = clang
+CC = gcc
 RM = rm
 CFLAGS = -Wall -std=c11 -I../inc -ltcmalloc
 
@@ -28,10 +28,15 @@ ZOBJ_TEST_OBJS = zobject.o zobj_test.o mem.o rb_tree.o
 
 MATRIX_TEST_OBJS = matrix.o matrix_test.o mem.o
 
+SORT_TEST_OBJS = sort_test.o quicksort.o stacksort.o
+
 .c.o:
 	$(CC) -c $(CFLAGS) $*.c
 
-all: compress_test bits_test rb_test hm_test base64_test random_test fsm_test mem_test json_test ref_test opt_test matrix_test zobj_test
+all: compress_test bits_test rb_test hm_test base64_test random_test fsm_test mem_test json_test ref_test opt_test matrix_test zobj_test sort_test
+
+sort_test: $(SORT_TEST_OBJS)
+	$(CC) $(CFLAGS) -o $@ $(SORT_TEST_OBJS)
 
 matrix_test: $(MATRIX_TEST_OBJS)
 	$(CC) $(CFLAGS) -o $@ $(MATRIX_TEST_OBJS)
@@ -76,4 +81,4 @@ hm_test: $(HM_TEST_OBJS)
 	$(CC) $(CLFAGS) -o $@ $(HM_TEST_OBJS)
 
 clean:
-	$(RM) -f *.o compress_test bits_test rb_test hm_test base64_test mem_test fsm_test json_test random_test ref_test opt_test zobj_test matrix_test
+	$(RM) -f *.o compress_test bits_test rb_test hm_test base64_test mem_test fsm_test json_test random_test ref_test opt_test zobj_test matrix_test sort_test

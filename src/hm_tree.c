@@ -16,7 +16,7 @@ getHMRoot(HMTree tree)
 
 HMSeed
 makeHMSeed(struct HMNode **seeds, unsigned int seed_num,
-	int (*cmpHMNode)(void *, void *),
+	int (*cmpHMNode)(const void *, const void *),
 	struct HMNode *(*mergeHMTree)(struct HMNode *, struct HMNode *))
 {
 	return (HMSeed){ cmpHMNode, mergeHMTree, seeds, seed_num };

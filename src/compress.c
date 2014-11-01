@@ -114,7 +114,7 @@ walkEncodeTree(struct HMNode *root, struct CompressBall *ball, char dest)
 }		
 
 static int
-hmTreeCmp(void *p1, void *p2) 
+hmTreeCmp(const void *p1, const void *p2) 
 {
         struct HMNode **node1 = (struct HMNode **)p1;
         struct HMNode **node2 = (struct HMNode **)p2;
