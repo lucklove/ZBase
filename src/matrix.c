@@ -117,6 +117,7 @@ matrixMinus(matrix_t m1, matrix_t m2)
 	return ret;
 }
 
+
 void
 dumpMatrix(matrix_t matrix)
 {

@@ -13,6 +13,7 @@
 
 #define to_class(node) container_of(node, struct ZObjClass, rb_node)
 
+// 保存类型
 static RBTree class_tree;
 //static mem_t interface_list;
 
@@ -34,6 +35,7 @@ dump_class_tree()
 }
 
 //TODO:interface
+//need by makeRBTree()
 static void
 swapClass(struct RBNode *src, struct RBNode *dst)
 {
@@ -56,18 +58,21 @@ swapClass(struct RBNode *src, struct RBNode *dst)
 	to_class(dst)->class_body = tmp_body;
 }
 
+//need by makeRBTree()
 static void *
 getClass(struct RBNode *p)
 {
 	return to_class(p);
 }
 
+//need by makeRBTree()
 static int
 cmpClass(void *n1, void *n2)
 {
 	return strcmp(((struct ZObjClass *)n1)->class_name, ((struct ZObjClass *)n2)->class_name);
 }
 
+//need by makeRBTree()
 static struct RBNode *
 makeClass(void *class_info)
 {
@@ -77,18 +82,21 @@ makeClass(void *class_info)
 	return &class->rb_node;
 }
 
+//need by makeRBTree()
 static void
 freeClass(struct RBNode *node)
 {
 	free(to_class(node));
 }
 
+//init object system
 void
 zObjInit()
 {
 	class_tree = makeRBTree(getClass, cmpClass, makeClass, swapClass, freeClass);
 }
 
+//find class in rb_tree by class name
 static struct ZObjClass *
 find_class(const char *name)
 {
@@ -142,6 +150,15 @@ zNewInstance(const char *class_name, void *data)
 	return getMemPtr(&ins, 0, 0);
 }
 
+void
+zDesInstance(struct ZObjInstance *ins)
+{
+	if(Z_HAVE_PARENT(ins))
+		zDesInstance(Z_PARENT_OBJ(ins)); 
+	if(ins->class->destructor)
+		ins->class->destructor(ins);
+}
+
 void *
 zGetClass(struct ZObjInstance *ins, const char *class_name)
 {
@@ -171,4 +188,12 @@ zGetInstance(struct ZObjInstance *ins, const char *class_name)
 		}
 	}
 	return getMemPtr(&ins->instance_body, 0, 0);
+}
+
+void
+zDesInstanceSpace(struct ZObjInstance *ins)
+{
+	destroyMem(ins->instance_body);
+	if(Z_HAVE_PARENT(ins))
+		destroyMem(ins->parent);
 }

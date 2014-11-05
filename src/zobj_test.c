@@ -3,68 +3,59 @@
 #include "debug.h"
 #include <stdio.h>
 
-struct MyClass {
-	void (*hello)(void);
+struct Cla1 {
+	void (*func)(void);
 };
 
-struct MyInstance {
-	int val;
+struct Ins1 {
+	const char *str;
 };
 
 static void
-haha()
+func1()
 {
-	printf("hello\n");
+	printf("func1 is called\n");
 }
 
 static void
-wuwu()
+cons1(struct ZObjInstance *ins, void *data)
 {
-	printf("wuwu\n");
-}
-
-static void
-constructor(struct ZObjInstance *ins, void *data)
-{
-	printf("cons...\n");
-	ins->instance_body = makeMem(sizeof(struct MyInstance));
-	GET_TYPE_MEM(&ins->instance_body, struct MyInstance, 0)->val = 3;
-	if(ins->class->parent != NULL) {
-		ins->parent = makeMem(sizeof(struct ZObjInstance));
-		GET_TYPE_MEM(&ins->parent, struct ZObjInstance, 0)->class = ins->class->parent;
-		ins->class->parent->constructor(getMemPtr(&ins->parent, 0, 0), data);
+	printf("enter cons1\n");
+	Z_MAKE_SPACE(ins, sizeof(struct Ins1));
+	Z_OBJ_TO_INSTANCE(ins, NULL, struct Ins1)->str = "I am cla1\n";
+	if(Z_HAVE_PARENT(ins)) {
+		Z_MAKE_PARENT_SPACE(ins);
+		Z_SET_CLASS(Z_PARENT_OBJ(ins), Z_PARENT_CLASS(ins));
+		Z_CONS_PARENT(ins, data);
 	}
 }
 
 
 static void
-destructor(struct ZObjInstance *ins)
+des1(struct ZObjInstance *ins)
 {
-	printf("des...\n");
+	zDesInstanceSpace(ins);
+	printf("enter des1\n");	
 }
 
 static void
 test_init()
 {
-	struct MyClass first = { haha };
-	struct MyClass sec = { wuwu };
-	zRegistClass("1", NULL, constructor, destructor, &first, sizeof(first));
-	zRegistClass("2", "1", constructor, destructor, &sec, sizeof(sec));
-	zRegistClass("3", "2", constructor, destructor, &sec, sizeof(sec));
-	zRegistClass("4", "3", constructor, destructor, &sec, sizeof(sec));
-	zRegistClass("5", "4", constructor, destructor, &sec, sizeof(sec));
+	struct Cla1 c1 = { func1 };
+	zRegistClass("class1", NULL, cons1, des1, &c1, sizeof(c1));
 }
 
 int
 main(int argc, char *argv[])
 {
+	memDebugInit();
 	zObjInit();
 	test_init();
-        struct ZObjInstance * ins1 = zNewInstance("1", NULL);
-	struct ZObjInstance * ins5 = zNewInstance("5", NULL);
-	Z_OBJ_TO_CLASS(ins1, NULL, struct MyClass)->hello();
-	printf("val = %d\n", Z_OBJ_TO_INSTANCE(ins1, "1", struct MyInstance)->val);
-	Z_OBJ_TO_CLASS(ins5, "1", struct MyClass)->hello();
-	printf("val = %d\n", Z_OBJ_TO_INSTANCE(ins5, "1", struct MyInstance)->val);
+        struct ZObjInstance * ins1 = zNewInstance("class1", NULL);
+	Z_OBJ_TO_CLASS(ins1, NULL, struct Cla1)->func();
+	printf(Z_OBJ_TO_INSTANCE(ins1, "class1", struct Ins1)->str);
+	Z_DES_OBJ(ins1);
+	memCheckLeak(stdout);
+	memDebugRelease();
 	return 0;
 }
