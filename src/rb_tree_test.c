@@ -46,31 +46,46 @@ freeNode(struct RBNode *node)
 
 void 
 show_rb_tree(struct RBNode* node){
-        if(node == NULL)
-                return;
-        printf("(%s,%s)\n", container_of(node, struct MyNode, node)->key, node->colour == 1 ? "BLACK" : "RED");
-        if(node->lchild != NULL){
+	printf("%s\n", container_of(node, struct MyNode, node)->key);
+        if(node->rb_left != NULL){
                 printf("%s left start:\n", container_of(node, struct MyNode, node)->key);
-                show_rb_tree(node->lchild);
+                show_rb_tree(node->rb_left);
                 printf("%s left end:\n", container_of(node, struct MyNode, node)->key);
         }
-        if(node->rchild != NULL){
+        if(node->rb_right != NULL){
                 printf("%s right start:\n", container_of(node, struct MyNode, node)->key);
-                show_rb_tree(node->rchild);
+                show_rb_tree(node->rb_right);
                 printf("%s right end:\n", container_of(node, struct MyNode, node)->key);
         }
 }
- 
+
+#define try_find(_key) 										\
+do {												\
+	struct RBNode *node = rbSearch(t, _key); 						\
+	if(node == NULL) {									\
+		printf("%s not found\n", _key);							\
+	} else {										\
+		printf("%s found\n", container_of(node, struct MyNode, node)->key);		\
+	}											\
+} while(0)
+	
 int 
 main(int argc, char *argv[]){
-//     	RBTree t = makeRBTree(getKey, cmpKey, makeNode, swapKey, freeNode);
      	RBTree t = makeRBTree(getKey, cmpKey, makeNode, swapKey, freeNode);
 	rbInsert(&t, "hello");
 	rbInsert(&t, "haha");
-     	rbDelete(&t, "hello");
+	rbInsert(&t, "xixi");
+	rbInsert(&t, "mimi");
+	rbInsert(&t, "gugu");
+	rbInsert(&t, "baba");
+	rbInsert(&t, "lala");
+	rbInsert(&t, "kaka");
+	rbInsert(&t, "jiji");
+     	show_rb_tree(t.rb_node);
+	try_find("gugu");
+	try_find("haha");
      	rbDelete(&t, "haha");
-     	show_rb_tree(t.root);
-     	printf("root %p\n", t.root);
+     	printf("root %p\n", t.rb_node);
 	destroyRBTree(t);
         return 0;
 }

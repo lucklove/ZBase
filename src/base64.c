@@ -1,9 +1,9 @@
 #include "base64.h"
-#include "debug.h"
 #include "mem.h"
 #include "bits.h"
 #include <string.h>
 #include <assert.h>
+#include <stdio.h>
 
 static const char *base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="; 
 

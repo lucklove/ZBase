@@ -1,8 +1,11 @@
 #pragma once
 
 struct RBNode {
-        struct RBNode* lchild, *rchild, *parent;
-        int colour;
+        unsigned long  rb_parent_color;
+#define RB_RED          0
+#define RB_BLACK        1
+        struct RBNode *rb_right;
+        struct RBNode *rb_left;
 };
 
 typedef struct {
@@ -11,10 +14,10 @@ typedef struct {
         struct RBNode  *(*makeNode)(void *); 
         void            (*swapKey)(struct RBNode *, struct RBNode *); 
         void            (*freeNode)(struct RBNode *); 
-        struct RBNode *root;
+        struct RBNode *rb_node;
 } RBTree, *RBTreePtr;
 
-void		rbInsert(RBTreePtr, void *);
+int		rbInsert(RBTreePtr, void *);
 void		rbDelete(RBTreePtr, void *);
 struct RBNode*	rbSearch(RBTree, void *);
 

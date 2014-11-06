@@ -1,5 +1,4 @@
 #include "zobject.h"
-#include "debug.h"
 #include "mem.h"
 #include "rb_tree.h"
 #include "container.h"
@@ -21,10 +20,10 @@ static void
 dump_class_node(struct RBNode *tree)
 {
 	printf("class : %s\n", to_class(tree)->class_name);
-	if(tree->lchild != NULL)
-		dump_class_node(tree->lchild);
-	if(tree->rchild != NULL)
-		dump_class_node(tree->rchild);
+	if(tree->rb_left != NULL)
+		dump_class_node(tree->rb_left);
+	if(tree->rb_right != NULL)
+		dump_class_node(tree->rb_right);
 }
 
 void
@@ -137,17 +136,18 @@ zNewInstance(const char *class_name, void *data)
 		printf("CRITICAL: class %s not found.\n", class_name);
 		return NULL;
 	}
-	mem_t ins = makeMem(sizeof(struct ZObjInstance));
-	GET_TYPE_MEM(&ins, struct ZObjInstance, 0)->class = dst_class;
-	dst_class->constructor(getMemPtr(&ins, 0, 0), data);
+	struct ZObjInstance *ins = malloc(sizeof(struct ZObjInstance));
+	assert(ins != NULL && "malloc failed!");	
+	ins->class = dst_class;
+	dst_class->constructor(ins, data);
 	if(dst_class->parent != NULL) {
-		if(getMemIndex(GET_TYPE_MEM(&ins, struct ZObjInstance, 0)->parent) == 0) {
-			GET_TYPE_MEM(&ins, struct ZObjInstance, 0)->parent = makeMem(sizeof(struct ZObjInstance));
-			ADD_ITEM(&GET_TYPE_MEM(&ins, struct ZObjInstance, 0)->parent, struct ZObjInstance, 
+		if(getMemIndex(ins->parent) == 0) {
+			ins->parent = makeMem(sizeof(struct ZObjInstance));
+			ADD_ITEM(&ins->parent, struct ZObjInstance, 
 				*zNewInstance(dst_class->parent->class_name, NULL));
 		}
 	}
-	return getMemPtr(&ins, 0, 0);
+	return ins;
 }
 
 void
@@ -194,6 +194,8 @@ void
 zDesInstanceSpace(struct ZObjInstance *ins)
 {
 	destroyMem(ins->instance_body);
-	if(Z_HAVE_PARENT(ins))
+	if(Z_HAVE_PARENT(ins)) {
+		printf("%p---\n", getMemPtr(&ins->parent, 0, 0));
 		destroyMem(ins->parent);
+	}
 }

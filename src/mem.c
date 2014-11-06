@@ -54,10 +54,10 @@ show_debug_node_tree(struct RBNode* node, FILE *debug_file){
         if(node == NULL)
                 return;
         fprintf(debug_file, "mem %p not freed\n", container_of(node, struct mem_debug_node, rb_node)->ptr);
-        if(node->lchild != NULL)
-                show_debug_node_tree(node->lchild, debug_file);
-        if(node->rchild != NULL)
-                show_debug_node_tree(node->rchild, debug_file);
+        if(node->rb_left != NULL)
+                show_debug_node_tree(node->rb_left, debug_file);
+        if(node->rb_right != NULL)
+                show_debug_node_tree(node->rb_right, debug_file);
 }
 
 void
@@ -69,7 +69,7 @@ memDebugInit()
 void
 memCheckLeak(FILE *debug_file)
 {
-	show_debug_node_tree(mem_debug_tree.root, debug_file);
+	show_debug_node_tree(mem_debug_tree.rb_node, debug_file);
 }
 	
 void
@@ -176,9 +176,13 @@ memCat(mem_t_ptr mem_p, const void *src, unsigned int len)
 void
 destroyMem(mem_t mem)
 {
-	if(mem.mem_ptr != NULL) 
-		free(mem.mem_ptr);
 #ifdef MEM_DEBUG
+	if(rbSearch(mem_debug_tree, mem.mem_ptr) == NULL) {
+		fprintf(stderr, "MEM ERROR: try to free %p which is NOT exist\n", mem.mem_ptr);
+		return;
+	}
 	rbDelete(&mem_debug_tree, mem.mem_ptr);
 #endif
+	if(mem.mem_ptr != NULL) 
+		free(mem.mem_ptr);
 }		

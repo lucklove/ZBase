@@ -26,7 +26,7 @@ OPT_TEST_OBJS = opt_test.o
 
 ZOBJ_TEST_OBJS = zobject.o zobj_test.o mem.o rb_tree.o
 
-MATRIX_TEST_OBJS = matrix.o matrix_test.o mem.o
+MATRIX_TEST_OBJS = matrix.o matrix_test.o mem.o rb_tree.o
 
 SORT_TEST_OBJS = sort_test.o sort.o
 
