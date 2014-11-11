@@ -9,14 +9,6 @@ struct MyNode {
         struct RBNode node;
 };
 
-void
-swapKey(struct RBNode *src, struct RBNode *dst)
-{
-        char *tmp = container_of(dst, struct MyNode, node)->key;
-        container_of(dst, struct MyNode, node)->key = container_of(src, struct MyNode, node)->key;
-        container_of(src, struct MyNode, node)->key = tmp;
-}
-
 void *
 getKey(struct RBNode *p)
 {
@@ -71,7 +63,7 @@ do {												\
 	
 int 
 main(int argc, char *argv[]){
-     	RBTree t = makeRBTree(getKey, cmpKey, makeNode, swapKey, freeNode);
+     	RBTree t = makeRBTree(getKey, cmpKey, makeNode, freeNode);
 	rbInsert(&t, "hello");
 	rbInsert(&t, "haha");
 	rbInsert(&t, "xixi");

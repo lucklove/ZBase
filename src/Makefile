@@ -1,6 +1,6 @@
 CC = gcc
 RM = rm
-CFLAGS = -Wall -std=c11 -I../inc -ltcmalloc -DMEM_DEBUG
+CFLAGS = -Wall -std=c11 -I../inc -ltcmalloc
 
 MEM_TEST_OBJS = mem.o mem_test.o rb_tree.o
 

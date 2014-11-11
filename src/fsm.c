@@ -11,24 +11,6 @@ struct EventLink {
 typedef void (*Hander)(int, int, int);
 
 //need by makeRBTree()
-static void
-toSwapNode(struct RBNode *src, struct RBNode *dst)
-{
-	int tmp_state = container_of(dst, struct FSMNode, rb_node)->state;	
-	mem_t tmp_mem = container_of(dst, struct FSMNode, rb_node)->events;	
-	Hander tmp_hander  = container_of(dst, struct FSMNode, rb_node)->trans_hander;
-	container_of(dst, struct FSMNode, rb_node)->state =
-		container_of(src, struct FSMNode, rb_node)->state;	
-	container_of(dst, struct FSMNode, rb_node)->events =
-		container_of(src, struct FSMNode, rb_node)->events;	
-	container_of(dst, struct FSMNode, rb_node)->trans_hander =
-		container_of(src, struct FSMNode, rb_node)->trans_hander;	
-	container_of(src, struct FSMNode, rb_node)->state = tmp_state;	
-	container_of(src, struct FSMNode, rb_node)->events = tmp_mem;	
-	container_of(src, struct FSMNode, rb_node)->trans_hander = tmp_hander;
-}
-
-//need by makeRBTree()
 static void *
 toGetKey(struct RBNode *ptr)
 {
@@ -65,7 +47,7 @@ fsm_t
 makeFSMType(void (*err_hander)(int, int))
 {
 	return (fsm_t){ .err_hander = err_hander, 
-			.rb_tree = makeRBTree(toGetKey, toCmpKey, toMakeNode, toSwapNode, toFreeNode),
+			.rb_tree = makeRBTree(toGetKey, toCmpKey, toMakeNode, toFreeNode),
 			.cur_state = NULL };
 }
 

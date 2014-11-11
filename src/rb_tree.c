@@ -18,24 +18,12 @@ static inline void rb_set_parent(struct RBNode *rb, struct RBNode *p)
 {
         rb->rb_parent_color = (rb->rb_parent_color & 3) | (unsigned long)p;
 }
+
 static inline void rb_set_color(struct RBNode *rb, int color)
 {
         rb->rb_parent_color = (rb->rb_parent_color & ~1) | color;
 }
 
-#define rb_entry(ptr, type, member) container_of(ptr, type, member)
-
-#define RB_EMPTY_ROOT(root)     ((root)->rb_node == NULL)
-#define RB_EMPTY_NODE(node)     (rb_parent(node) == node)
-#define RB_CLEAR_NODE(node)     (rb_set_parent(node, node))
-
-static inline void rb_init_node(struct RBNode *rb)
-{
-        rb->rb_parent_color = 0;
-        rb->rb_right = NULL;
-        rb->rb_left = NULL;
-        RB_CLEAR_NODE(rb);
-}
 static inline void rb_link_node(struct RBNode * node, struct RBNode * parent,
                                 struct RBNode ** rb_link)
 {
@@ -477,10 +465,9 @@ void rb_replace_node(struct RBNode *victim, struct RBNode *new,
 RBTree
 makeRBTree(void *(*getKey)(struct RBNode *), int (*cmpKey)(void *, void *),
         struct RBNode *(*makeNode)(void *key),
-        void    (*swapKey)(struct RBNode *, struct RBNode *),
         void    (*freeNode)(struct RBNode *))
 {
-        return (RBTree){ getKey, cmpKey, makeNode, swapKey, freeNode, NULL };
+        return (RBTree){ getKey, cmpKey, makeNode, freeNode, NULL };
 }
 
 static void
@@ -498,7 +485,7 @@ destroyTree(struct RBNode *tree, void (*freeFunc)(struct RBNode *))
 void
 destroyRBTree(RBTree tree)
 {
-        if(tree.freeNode != NULL)
+        if(tree.freeNode)
                 destroyTree(tree.rb_node, tree.freeNode);
 }
 
@@ -558,4 +545,3 @@ rbDelete(RBTreePtr tree, void *key)
 			tree->freeNode(node);
 	}
 }
-

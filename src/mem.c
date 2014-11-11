@@ -15,14 +15,6 @@ struct mem_debug_node {
 
 static RBTree mem_debug_tree;
 
-static void
-swap_debug_node(struct RBNode *src, struct RBNode *dst)
-{
-	void *tmp = container_of(dst, struct mem_debug_node, rb_node)->ptr;
-	container_of(dst, struct mem_debug_node, rb_node)->ptr = container_of(src, struct mem_debug_node, rb_node)->ptr;
-	container_of(src, struct mem_debug_node, rb_node)->ptr = tmp;
-}
-
 static void *
 get_ptr(struct RBNode *p) 
 {
@@ -63,7 +55,7 @@ show_debug_node_tree(struct RBNode* node, FILE *debug_file){
 void
 memDebugInit()
 {
-	mem_debug_tree = makeRBTree(get_ptr, cmp_ptr, make_debug_node, swap_debug_node, free_debug_node);
+	mem_debug_tree = makeRBTree(get_ptr, cmp_ptr, make_debug_node, free_debug_node);
 }
 
 void

@@ -12,7 +12,6 @@ typedef struct {
         void            *(*getKey)(struct RBNode *); 
         int             (*cmpKey)(void *, void *); 
         struct RBNode  *(*makeNode)(void *); 
-        void            (*swapKey)(struct RBNode *, struct RBNode *); 
         void            (*freeNode)(struct RBNode *); 
         struct RBNode *rb_node;
 } RBTree, *RBTreePtr;
@@ -25,6 +24,5 @@ struct RBNode* rbGetRoot(RBTree);
 
 RBTree 	makeRBTree(void *(*)(struct RBNode *), int (*)(void *, void *),		\
 	struct RBNode *(*)(void *key),						\
-	void    (*)(struct RBNode *, struct RBNode *),				\
 	void    (*)(struct RBNode *));
 void 	destroyRBTree(RBTree);
