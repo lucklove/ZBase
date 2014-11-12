@@ -24,25 +24,6 @@ struct InterfaceInfo {
 static RBTree class_tree;
 static RBTree interface_tree;
 
-/*
-static void
-dump_class_node(struct RBNode *tree)
-{
-	printf("class : %s\n", to_class(tree)->class_name);
-	if(tree->rb_left != NULL)
-		dump_class_node(tree->rb_left);
-	if(tree->rb_right != NULL)
-		dump_class_node(tree->rb_right);
-}
-
-void
-dump_class_tree()
-{
-	if(rbGetRoot(class_tree) != NULL)
-		dump_class_node(rbGetRoot(class_tree));
-}
-*/
-
 //need by makeRBTree()
 static void *
 get_class(struct RBNode *node)
@@ -185,8 +166,8 @@ strip_class(const char *self)
 }
 
 int	
-zRegistClass(const char *class_name, const char *parent_name, void (*cons)(struct ZObjInstance *, void *),
-	void (*des)(struct ZObjInstance *), void *class_body, unsigned int size_of_class)
+zRegistClass(const char *class_name, const char *parent_name, void *(*cons)(void *, void *),
+	void (*des)(void *), unsigned int ins_size, void *class_body, unsigned int size_of_class)
 {
 	mem_t class = makeMem(size_of_class);
 	struct ZObjClass *parent = NULL;
@@ -201,7 +182,7 @@ zRegistClass(const char *class_name, const char *parent_name, void (*cons)(struc
 	}
 	if(class_body != NULL)
 		memCpy(&class, class_body, size_of_class);
-	struct ZObjClass  reg_class = { class_name, parent, cons, des, makeMem(0), class };
+	struct ZObjClass  reg_class = { class_name, parent, cons, des, ins_size, makeMem(0), class };
 	rbInsert(&class_tree, &reg_class);
 	return strip_class(class_name);
 }
@@ -279,6 +260,22 @@ zGetInterfaceByInstance(struct ZObjInstance *ins, const char *interface_name)
 	return zGetInterfaceByName(ins->class->class_name, interface_name);
 }
 
+static struct ZObjInstance *
+construct_instance(struct ZObjClass *class, void *data)
+{
+	struct ZObjInstance *instance = malloc(sizeof(*instance));
+	assert(instance != NULL);
+	memset(instance, 0, sizeof(*instance));
+	instance->class = class;
+	instance->instance_body = malloc(class->instance_size);
+	assert(instance->instance_body != NULL);
+	memset(instance->instance_body, 0, class->instance_size);
+	void *parent_data = class->constructor(instance->instance_body, data);
+	if(class->parent != NULL)
+		instance->parent = construct_instance(class->parent, parent_data);
+	return instance;
+}					
+
 struct ZObjInstance *
 zNewInstance(const char *class_name, void *data)
 {
@@ -287,27 +284,18 @@ zNewInstance(const char *class_name, void *data)
 		printf("CRITICAL: class %s not found.\n", class_name);
 		return NULL;
 	}
-	struct ZObjInstance *ins = malloc(sizeof(struct ZObjInstance));
-	assert(ins != NULL && "malloc failed!");	
-	ins->class = dst_class;
-	dst_class->constructor(ins, data);
-	if(dst_class->parent != NULL) {
-		if(getMemIndex(ins->parent) == 0) {
-			ins->parent = makeMem(sizeof(struct ZObjInstance));
-			ADD_ITEM(&ins->parent, struct ZObjInstance, 
-				*zNewInstance(dst_class->parent->class_name, NULL));
-		}
-	}
-	return ins;
+	return construct_instance(dst_class, data);
 }
 
 void
 zDesInstance(struct ZObjInstance *ins)
 {
-	if(Z_HAVE_PARENT(ins))
-		zDesInstance(Z_PARENT_OBJ(ins)); 
-	if(ins->class->destructor)
-		ins->class->destructor(ins);
+	if(ins->parent != NULL)
+		zDesInstance(ins->parent); 
+	if(ins->class->destructor) {
+		ins->class->destructor(ins->instance_body);
+		free(ins->instance_body);
+	}
 }
 
 void *
@@ -348,17 +336,8 @@ zGetInstance(struct ZObjInstance *ins, const char *class_name)
 				printf("CRITICAL: class %s not found.\n", class_name);
 				return NULL;
 			}
-			ins = getMemPtr(&ins->parent, 0, 0);
+			ins = ins->parent;
 		}
 	}
-	return getMemPtr(&ins->instance_body, 0, 0);
-}
-
-void
-zDesInstanceSpace(struct ZObjInstance *ins)
-{
-	destroyMem(ins->instance_body);
-	if(Z_HAVE_PARENT(ins)) {
-		destroyMem(ins->parent);
-	}
+	return ins->instance_body;
 }

@@ -1,103 +1,142 @@
 #include "zobject.h"
 #include "mem.h"
-#include "debug.h"
 #include <stdio.h>
 #include <assert.h>
 
-struct Cla1 {
-	void (*func)(void);
+struct anamal_class {
+	void (*who_are_you)(struct ZObjInstance *);
 };
 
-struct Ins1 {
-	const char *str;
+struct fish_class {
+	void (*swim)(struct ZObjInstance *);
 };
 
-struct Int1 {
-	int (*fuvc)(void);
+struct dog_class {
+	void (*run)(struct ZObjInstance *);
+};
+
+struct anamal_instance {
+	const char *name;
+};
+
+struct fish_instance {
+	int size;
+};
+
+struct dog_instance {
+	float speed;
 };
 
 static void
-func1()
+anamal_tell(struct ZObjInstance *ins)
 {
-	printf("func1 is called\n");
-}
-
-static int
-fvck1()
-{
-	printf("fuvc1\n");
-	return 0;
-}
-
-static int
-fvck2()
-{
-	printf("fuvc2\n");
-	return 0;
+	const char *name = Z_OBJ_TO_INSTANCE(ins, "anamal", struct anamal_instance)->name;
+	printf("I am an anamal, and my name is %s\n", name);
 }
 
 static void
-func2()
+fish_tell(struct ZObjInstance *ins)
 {
-	printf("func2 is called\n");
+	const char *name = Z_OBJ_TO_INSTANCE(ins, "anamal", struct anamal_instance)->name;
+	printf("I am a fish, and my name is %s\n", name);
 }
 
 static void
-cons1(struct ZObjInstance *ins, void *data)
+dog_tell(struct ZObjInstance *ins)
 {
-	Z_MAKE_SPACE(ins, sizeof(struct Ins1));
-	Z_OBJ_TO_INSTANCE(ins, NULL, struct Ins1)->str = "I am cla1\n";
-	if(Z_HAVE_PARENT(ins)) {
-		Z_MAKE_PARENT_SPACE(ins);
-		Z_SET_CLASS(Z_PARENT_OBJ(ins), Z_PARENT_CLASS(ins));
-		Z_CONS_PARENT(ins, data);
-	}
+	const char *name = Z_OBJ_TO_INSTANCE(ins, "anamal", struct anamal_instance)->name;
+	printf("I am an dog, and my name is %s\n", name);
 }
 
 static void
-des1(struct ZObjInstance *ins)
+fish_swim(struct ZObjInstance *ins)
 {
-	zDesInstanceSpace(ins);
+	Z_OBJ_TO_CLASS(ins, "anamal", struct anamal_class)->who_are_you(ins);
+	printf("I am %d and I can swim\n", Z_OBJ_TO_INSTANCE(ins, "fish", struct fish_instance)->size);
+}
+
+static void
+dog_run(struct ZObjInstance *ins)
+{
+	Z_OBJ_TO_CLASS(ins, "anamal", struct anamal_class)->who_are_you(ins);
+	printf("My speed is %f\n", Z_OBJ_TO_INSTANCE(ins, "dog", struct dog_instance)->speed);
+}
+
+static void *
+anamal_cons(void *ins, void *data)
+{
+	struct anamal_instance *instance = ins;
+	instance->name = data;
+	return NULL;
+}
+	
+static void *
+fish_cons(void *ins, void *data)
+{
+	struct fish_instance *instance = ins;
+	instance->size = 2;
+	return data;
+}
+
+static void
+anamal_des(void *body)
+{
+	printf("anamal des\n");
+}
+
+static void
+fish_des(void *body)
+{
+	printf("fish des\n");
+}
+
+static void *
+dog_cons(void *ins, void *data)
+{
+	struct dog_instance *instance = ins;
+	instance->speed = 3.5;
+	return data;
+}
+
+static void
+dog_des(void *body)
+{
+	printf("dog des\n");
 }
 
 static void
 test_init()
 {
-	struct Cla1 c1 = { func1 };
-	zRegistClass("class1", NULL, cons1, des1, &c1, sizeof(c1));
-	zRegistClass("class2", "class1", cons1, des1, &c1, sizeof(c1));
-	zRegistInterface("int1", NULL, sizeof(struct Int1));
-	zAddInterface("class2", "int1");
-	Z_IMP_INTERFACE("class2", "int1", struct Int1)->fuvc = fvck1;
-	zRegistClass("class3", "class2", cons1, des1, &c1, sizeof(c1));
-	Z_IMP_INTERFACE("class3", "int1", struct Int1)->fuvc = fvck2;
-	zRegistClass("class4", "class3", cons1, des1, &c1, sizeof(c1));
-	zRegistClass("class5", "class4", cons1, des1, &c1, sizeof(c1));
-	Z_CLASS_TO_CLASS("class5", "class2", struct Cla1)->func = func2;
+	struct anamal_class anamal_struct = { anamal_tell };
+	zRegistClass("anamal", NULL, anamal_cons, anamal_des, 
+		sizeof(struct anamal_instance), &anamal_struct, sizeof(anamal_struct));
+	struct fish_class fish_struct = { fish_swim };
+	zRegistClass("fish", "anamal", fish_cons, fish_des,
+		sizeof(struct fish_instance), &fish_struct, sizeof(fish_struct));
+	Z_CLASS_TO_CLASS("fish", "anamal", struct anamal_class)->who_are_you = fish_tell;
+	struct dog_class dog_struct = { dog_run };
+	zRegistClass("dog", "anamal", dog_cons, dog_des,
+		sizeof(struct dog_instance), &dog_struct, sizeof(dog_struct));
+	Z_CLASS_TO_CLASS("dog", "anamal", struct anamal_class)->who_are_you = dog_tell;
+}
+
+static void
+tell(struct ZObjInstance *ins)
+{
+	Z_OBJ_TO_CLASS(ins, "anamal", struct anamal_class)->who_are_you(ins);
 }
 
 int
 main(int argc, char *argv[])
 {
-	memDebugInit();
 	zObjInit();
 	test_init();
-        struct ZObjInstance *ins1 = zNewInstance("class1", NULL);
-	struct ZObjInstance *ins2 = zNewInstance("class2", NULL);
-	struct ZObjInstance *ins3 = zNewInstance("class3", NULL);
-	struct ZObjInstance *ins5 = zNewInstance("class5", NULL);
-	Z_OBJ_TO_CLASS(ins1, NULL, struct Cla1)->func();
-	printf(Z_OBJ_TO_INSTANCE(ins1, "class1", struct Ins1)->str);
-	Z_OBJ_TO_CLASS(ins5, "class2", struct Cla1)->func();
-	Z_OBJ_TO_CLASS(ins3, "class2", struct Cla1)->func();
-	printf(Z_OBJ_TO_INSTANCE(ins5, "class1", struct Ins1)->str);
-	Z_OBJ_TO_INTERFACE(ins5, "int1", struct Int1)->fuvc();
-	Z_OBJ_TO_INTERFACE(ins2, "int1", struct Int1)->fuvc();
-	Z_DES_OBJ(ins2);
-	Z_DES_OBJ(ins1);
-	Z_DES_OBJ(ins3);
-	Z_DES_OBJ(ins5);
-	memCheckLeak(stdout);
-	memDebugRelease();
+	struct ZObjInstance *ins = zNewInstance("anamal", "aiai");
+	tell(ins);	
+	zDesInstance(ins);	
+	ins = zNewInstance("fish", "yuyu");
+	tell(ins);
+	Z_OBJ_TO_CLASS(ins, NULL, struct fish_class)->swim(ins);
+	zDesInstance(ins);	
 	return 0;
 }
