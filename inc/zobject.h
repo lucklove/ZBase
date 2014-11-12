@@ -38,7 +38,6 @@ void *zGetInterfaceByName(const char *, const char *);
 void *zGetInterfaceByInstance(struct ZObjInstance *, const char *);
 void zAddInterface(const char *, const char *);
 int zRegistInterface(const char *, const char *, unsigned int);
-int zOverLoad(const char *);
 struct ZObjInstance *zNewInstance(const char *class_name, void *data);
 void zDesInstance(struct ZObjInstance *);
 int zRegistClass(const char *, const char *parent_name, void (*constructor)(struct ZObjInstance *, void *), 

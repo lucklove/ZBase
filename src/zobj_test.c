@@ -54,7 +54,6 @@ cons1(struct ZObjInstance *ins, void *data)
 	}
 }
 
-
 static void
 des1(struct ZObjInstance *ins)
 {
@@ -71,11 +70,9 @@ test_init()
 	zAddInterface("class2", "int1");
 	Z_IMP_INTERFACE("class2", "int1", struct Int1)->fuvc = fvck1;
 	zRegistClass("class3", "class2", cons1, des1, &c1, sizeof(c1));
-	assert(zOverLoad("class3") == 0);
 	Z_IMP_INTERFACE("class3", "int1", struct Int1)->fuvc = fvck2;
 	zRegistClass("class4", "class3", cons1, des1, &c1, sizeof(c1));
 	zRegistClass("class5", "class4", cons1, des1, &c1, sizeof(c1));
-	assert(zOverLoad("class5") == 0);
 	Z_CLASS_TO_CLASS("class5", "class2", struct Cla1)->func = func2;
 }
 
