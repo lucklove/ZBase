@@ -173,13 +173,13 @@ get_interface_in_class(const char *class_name, const char *interface_name)
 		printf("CRITICAL: class %s not found.\n", class_name);
 		return NULL;
 	}
-	for(int i = 0; i < GET_ITEM_NUM(dst_class->interfaces, struct ZObjInterface); ++i) {
-		if(strcmp(interface_name, GET_TYPE_MEM(&dst_class->interfaces,
-			struct ZObjInterface, i)->interface_name) == 0) 
-			return GET_TYPE_MEM(&dst_class->interfaces, struct ZObjInterface, i)->interface_body;
-	}
-	if(dst_class->parent != NULL) {
-		return get_interface_in_class(dst_class->parent->class_name, interface_name);
+	while(dst_class != NULL) {
+		for(int i = 0; i < GET_ITEM_NUM(dst_class->interfaces, struct ZObjInterface); ++i) {
+			if(strcmp(interface_name, GET_TYPE_MEM(&dst_class->interfaces,
+				struct ZObjInterface, i)->interface_name) == 0) 
+				return GET_TYPE_MEM(&dst_class->interfaces, struct ZObjInterface, i)->interface_body;
+		}
+		dst_class = dst_class->parent;
 	}
 	return NULL;
 }
@@ -197,11 +197,15 @@ zAddInterface(const char *class_name, const char *interface_name)
 		printf("CRITICAL: interface %s not found.\n", interface_name);
 		return;
 	}
-	void *interface_body = malloc(dst_interface->struct_size);
-	assert(interface_body != NULL);
-	memset(interface_body, 0, dst_interface->struct_size);
-	ADD_ITEM(&dst_class->interfaces, struct ZObjInterface, 
-		((struct ZObjInterface){ interface_name, interface_body }));
+	for(; dst_interface != NULL; dst_interface = dst_interface->parent) {
+		if(get_interface_in_class(class_name, dst_interface->interface_name) != NULL)
+			continue;
+		void *interface_body = malloc(dst_interface->struct_size);
+		assert(interface_body != NULL);
+		memset(interface_body, 0, dst_interface->struct_size);
+		ADD_ITEM(&dst_class->interfaces, struct ZObjInterface, 
+			((struct ZObjInterface){ interface_name, interface_body }));
+	}
 }
 
 	
@@ -320,8 +324,25 @@ dup_parent_class(struct ZObjClass *self)
 	new_parent->class_body = makeMem(getMemIndex(self->parent->class_body));
 	memCpy(&new_parent->class_body, getMemPtr(&self->parent->class_body, 0, 0),
 			getMemIndex(self->parent->class_body));
-	memCpy(&new_parent->interfaces, getMemPtr(&self->parent->interfaces, 0, 0),
-			getMemIndex(self->parent->interfaces));
+	for(int i = 0; i < GET_ITEM_NUM(self->parent->interfaces, struct ZObjInterface); ++i) {
+		struct InterfaceInfo *info = find_interface(GET_TYPE_MEM(&self->parent->interfaces, 
+							struct ZObjInterface, i)->interface_name);
+		if(info == NULL) {
+			printf("CRITICAL: can't find interface %s when dup_parent_class\n", 
+				GET_TYPE_MEM(&self->parent->interfaces,struct ZObjInterface, i)->interface_name);
+			continue;
+		}
+		void *body = malloc(info->struct_size);
+		assert(body != NULL);
+		if(GET_TYPE_MEM(&self->parent->interfaces, struct ZObjInterface, i)->interface_body)
+		memcpy(body, 
+			GET_TYPE_MEM(&self->parent->interfaces, struct ZObjInterface, i)->interface_body,
+			info->struct_size);
+		ADD_ITEM(&new_parent->interfaces, struct ZObjInterface, 
+			((struct ZObjInterface){ 
+				GET_TYPE_MEM(&self->parent->interfaces,struct ZObjInterface, i)->interface_name,
+				body }));
+	}
 	self->parent = new_parent;
 	dup_parent_class(self->parent);
 }

@@ -1,5 +1,6 @@
 #include "zobject.h"
 #include "mem.h"
+#include "debug.h"
 #include <stdio.h>
 #include <assert.h>
 
@@ -25,6 +26,13 @@ static int
 fvck1()
 {
 	printf("fuvc1\n");
+	return 0;
+}
+
+static int
+fvck2()
+{
+	printf("fuvc2\n");
 	return 0;
 }
 
@@ -63,6 +71,8 @@ test_init()
 	zAddInterface("class2", "int1");
 	Z_IMP_INTERFACE("class2", "int1", struct Int1)->fuvc = fvck1;
 	zRegistClass("class3", "class2", cons1, des1, &c1, sizeof(c1));
+	assert(zOverLoad("class3") == 0);
+	Z_IMP_INTERFACE("class3", "int1", struct Int1)->fuvc = fvck2;
 	zRegistClass("class4", "class3", cons1, des1, &c1, sizeof(c1));
 	zRegistClass("class5", "class4", cons1, des1, &c1, sizeof(c1));
 	assert(zOverLoad("class5") == 0);
@@ -76,6 +86,7 @@ main(int argc, char *argv[])
 	zObjInit();
 	test_init();
         struct ZObjInstance *ins1 = zNewInstance("class1", NULL);
+	struct ZObjInstance *ins2 = zNewInstance("class2", NULL);
 	struct ZObjInstance *ins3 = zNewInstance("class3", NULL);
 	struct ZObjInstance *ins5 = zNewInstance("class5", NULL);
 	Z_OBJ_TO_CLASS(ins1, NULL, struct Cla1)->func();
@@ -84,6 +95,8 @@ main(int argc, char *argv[])
 	Z_OBJ_TO_CLASS(ins3, "class2", struct Cla1)->func();
 	printf(Z_OBJ_TO_INSTANCE(ins5, "class1", struct Ins1)->str);
 	Z_OBJ_TO_INTERFACE(ins5, "int1", struct Int1)->fuvc();
+	Z_OBJ_TO_INTERFACE(ins2, "int1", struct Int1)->fuvc();
+	Z_DES_OBJ(ins2);
 	Z_DES_OBJ(ins1);
 	Z_DES_OBJ(ins3);
 	Z_DES_OBJ(ins5);
