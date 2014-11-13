@@ -117,6 +117,11 @@ matrixMinus(matrix_t m1, matrix_t m2)
 	return ret;
 }
 
+void *
+matrixGetArray(matrix_t matrix)
+{
+	return getMemPtr(&matrix.array, 0, 0);
+}
 
 void
 dumpMatrix(matrix_t matrix)

@@ -15,6 +15,10 @@ struct dog_class {
 	void (*run)(struct ZObjInstance *);
 };
 
+struct eat_interface {
+	void (*eat)(void);
+};
+
 struct anamal_instance {
 	const char *name;
 };
@@ -32,6 +36,12 @@ anamal_tell(struct ZObjInstance *ins)
 {
 	const char *name = Z_OBJ_TO_INSTANCE(ins, "anamal", struct anamal_instance)->name;
 	printf("I am an anamal, and my name is %s\n", name);
+}
+
+static void
+eat()
+{
+	printf("I am eating...\n");
 }
 
 static void
@@ -110,6 +120,9 @@ test_init()
 	struct anamal_class anamal_struct = { anamal_tell };
 	zRegistClass("anamal", NULL, anamal_cons, anamal_des, 
 		sizeof(struct anamal_instance), &anamal_struct, sizeof(anamal_struct));
+	zRegistInterface("eat", NULL, sizeof(struct eat_interface));
+	zAddInterface("anamal", "eat");
+	Z_IMP_INTERFACE("anamal", "eat", struct eat_interface)->eat = eat;
 	struct fish_class fish_struct = { fish_swim };
 	zRegistClass("fish", "anamal", fish_cons, fish_des,
 		sizeof(struct fish_instance), &fish_struct, sizeof(fish_struct));
@@ -137,6 +150,7 @@ main(int argc, char *argv[])
 	ins = zNewInstance("fish", "yuyu");
 	tell(ins);
 	Z_OBJ_TO_CLASS(ins, NULL, struct fish_class)->swim(ins);
+	Z_OBJ_TO_INTERFACE(ins, "eat", struct eat_interface)->eat();
 	zDesInstance(ins);	
 	return 0;
 }

@@ -20,3 +20,6 @@ void matrixDelRow(matrix_t *, unsigned int);
 void matrixDelCol(matrix_t *, unsigned int);
 matrix_t matrixMult(matrix_t, matrix_t);
 matrix_t matrixMultNum(matrix_t, double);
+matrix_t matrixMinus(matrix_t, matrix_t);
+matrix_t matrixAdd(matrix_t, matrix_t);
+void *matrixGetArray(matrix_t);

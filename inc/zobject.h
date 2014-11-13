@@ -47,4 +47,3 @@ int zRegistClass(const char *, const char *parent_name, void *(*constructor)(voi
 #define Z_OBJ_TO_INSTANCE(ins, class_name, type) ((type *)zGetInstance(ins, class_name))
 #define Z_IMP_INTERFACE(class_name, interface_name, type) ((type *)zGetInterfaceByName(class_name, interface_name))
 #define Z_CLASS_TO_CLASS(self, name, type) ((type *)zGetClassByName(self, name))
-#define Z_GET_CLASS(class_ptr, type) ((type *)getMemPtr(&class_ptr->class_body, 0, 0))
