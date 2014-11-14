@@ -30,10 +30,15 @@ MATRIX_TEST_OBJS = matrix.o matrix_test.o mem.o rb_tree.o
 
 SORT_TEST_OBJS = sort_test.o sort.o
 
+SPIN_TEST_OBJS = spin.o spin_test.o
+
 .c.o:
 	$(CC) -c $(CFLAGS) $*.c
 
 all: compress_test bits_test rb_test hm_test base64_test random_test fsm_test mem_test json_test ref_test opt_test matrix_test zobj_test sort_test
+
+spin_test: $(SPIN_TEST_OBJS)
+	$(CC) $(CFLAGS) -o $@ $(SPIN_TEST_OBJS) -lpthread
 
 sort_test: $(SORT_TEST_OBJS)
 	$(CC) $(CFLAGS) -o $@ $(SORT_TEST_OBJS)
@@ -81,4 +86,4 @@ hm_test: $(HM_TEST_OBJS)
 	$(CC) $(CLFAGS) -o $@ $(HM_TEST_OBJS)
 
 clean:
-	$(RM) -f *.o compress_test bits_test rb_test hm_test base64_test mem_test fsm_test json_test random_test ref_test opt_test zobj_test matrix_test sort_test
+	$(RM) -f *.o compress_test bits_test rb_test hm_test base64_test mem_test fsm_test json_test random_test ref_test opt_test zobj_test matrix_test sort_test spin_test
