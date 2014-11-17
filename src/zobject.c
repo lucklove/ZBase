@@ -2,7 +2,6 @@
 #include "mem.h"
 #include "rb_tree.h"
 #include "container.h"
-#include "opt.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -300,7 +299,7 @@ struct ZObjInstance *
 zNewInstance(const char *class_name, void *data)
 {
 	struct ZObjClass *dst_class = find_class(class_name);
-	if(opt_unlikely(dst_class == NULL)) {
+	if(dst_class == NULL) {
 		printf("CRITICAL: class %s not found.\n", class_name);
 		return NULL;
 	}
