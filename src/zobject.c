@@ -14,7 +14,8 @@
 
 struct InterfaceInfo {
 	const char *interface_name;
-	struct InterfaceInfo *parent;
+//	struct InterfaceInfo *parent;
+	mem_t parents;
 	unsigned int struct_size;
 	struct RBNode rb_node;
 };
@@ -186,20 +187,32 @@ zRegistClass(const char *class_name, const char *parent_name, void *(*cons)(void
 	return strip_class(class_name);
 }
 
-int
-zRegistInterface(const char *interface_name, const char *parent_name, unsigned int size_of_interface)
+bool
+zRegistInterface(const char *interface_name, unsigned int size_of_interface)
 {
-	struct InterfaceInfo *parent = NULL;
-	if(parent_name != NULL) {
-		parent = find_interface(parent_name);
-		if(parent == NULL)
-			printf("CRITICAL: interface %s not found.\n", parent_name);
-	}
-	struct InterfaceInfo reg_interface = { interface_name, parent, size_of_interface };
-	rbInsert(&interface_tree, &reg_interface);
-	return 0;
+	struct InterfaceInfo reg_interface = { interface_name, makeMem(0), size_of_interface };
+	return rbInsert(&interface_tree, &reg_interface);
 }
 
+bool
+zInterfaceAddParent(const char *interface_name, const char *parent_name)
+{
+	struct InterfaceInfo *self = NULL;
+	struct InterfaceInfo *parent = NULL;
+	self = find_interface(interface_name);
+	if(self == NULL) {
+		printf("CRITICAL: interface %s not found.\n", interface_name);
+		return false;
+	}
+	parent = find_interface(parent_name);
+	if(parent == NULL) {
+		printf("CRITICAL: interface %s not found.\n", parent_name);
+		return false;
+	}
+	ADD_ITEM(&self->parents, struct InterfaceInfo *, parent);
+	return true;
+}
+	
 static void *
 get_interface_in_class(const char *class_name, const char *interface_name)
 {
@@ -219,31 +232,39 @@ get_interface_in_class(const char *class_name, const char *interface_name)
 	return NULL;
 }
 
-void
+static void
+add_interface_to_class(struct ZObjClass *dst_class, struct InterfaceInfo *dst_interface)
+{
+	if(get_interface_in_class(dst_class->class_name, dst_interface->interface_name))
+		return;
+	for(int i = 0; i < GET_ITEM_NUM(dst_interface->parents, struct InterfaceInfo *); ++i) {
+		add_interface_to_class(dst_class, 
+			GET_TYPE_ITEM(&dst_interface->parents, struct InterfaceInfo *, i));
+	}
+	void *interface_body = malloc(dst_interface->struct_size);
+	assert(interface_body != NULL);
+	memset(interface_body, 0, dst_interface->struct_size);
+	ADD_ITEM(&dst_class->interfaces, struct ZObjInterface, 
+		((struct ZObjInterface){ dst_interface->interface_name, interface_body }));
+}
+	
+bool
 zAddInterface(const char *class_name, const char *interface_name)
 {
 	struct ZObjClass *dst_class = find_class(class_name);
 	struct InterfaceInfo *dst_interface = find_interface(interface_name);
 	if(dst_class == NULL) {
 		printf("CRITICAL: class %s not found.\n", class_name);
-		return;
+		return false;
 	}
 	if(dst_interface == NULL) {
 		printf("CRITICAL: interface %s not found.\n", interface_name);
-		return;
+		return false;
 	}
-	for(; dst_interface != NULL; dst_interface = dst_interface->parent) {
-		if(get_interface_in_class(class_name, dst_interface->interface_name) != NULL)
-			continue;
-		void *interface_body = malloc(dst_interface->struct_size);
-		assert(interface_body != NULL);
-		memset(interface_body, 0, dst_interface->struct_size);
-		ADD_ITEM(&dst_class->interfaces, struct ZObjInterface, 
-			((struct ZObjInterface){ interface_name, interface_body }));
-	}
+	add_interface_to_class(dst_class, dst_interface);
+	return true;
 }
 
-	
 void *
 zGetInterfaceByName(const char *class_name, const char *interface_name)
 {

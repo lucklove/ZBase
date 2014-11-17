@@ -1,5 +1,4 @@
 #include "rb_tree.h"
-#include <stdbool.h>
 
 #ifndef NULL
 #define NULL ((void *)0)
@@ -495,7 +494,7 @@ rbGetRoot(RBTree tree)
         return tree.rb_node;
 }
 
-int
+bool
 rbInsert(RBTreePtr tree, void *key)
 {
 	struct RBNode **new = &tree->rb_node, *parent = NULL;
@@ -508,13 +507,13 @@ rbInsert(RBTreePtr tree, void *key)
 		} else if(result > 0) {
 			new = &((*new)->rb_right);
 		} else {
-			return 0;
+			return false;
 		}
 	}
 	struct RBNode *node = tree->makeNode(key);
 	rb_link_node(node, parent, new);
 	rb_insert_color(node, tree);
-	return 1;
+	return true;
 }
 
 struct RBNode *

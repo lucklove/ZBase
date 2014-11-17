@@ -81,7 +81,9 @@ void
 __pop_jmp_point()
 {
 	unsigned long thread_id = cur_thread;
+	spinLock(&spin_lk);
 	struct RBNode *stack = rbSearch(stack_tree, &thread_id);
+	spinUnlock(&spin_lk);
 	struct stack_node *node = to_stack(stack)->stack_top;
 	assert(node != NULL);
 	to_stack(stack)->stack_top = node->prev;
@@ -92,7 +94,9 @@ struct ZObjInstance *
 __get_cur_error()
 {
 	unsigned long thread_id = cur_thread;
+	spinLock(&spin_lk);
 	struct RBNode *stack = rbSearch(stack_tree, &thread_id);
+	spinUnlock(&spin_lk);
 	assert(to_stack(stack)->cur_error != NULL);
 	return to_stack(stack)->cur_error;
 }
@@ -101,7 +105,9 @@ void
 __throw(struct ZObjInstance *e)
 {
 	unsigned long thread_id = cur_thread;
+	spinLock(&spin_lk);
 	struct RBNode *stack = rbSearch(stack_tree, &thread_id);
+	spinUnlock(&spin_lk);
 	to_stack(stack)->cur_error = e;
 	longjmp(to_stack(stack)->stack_top->jb, 1);
 }

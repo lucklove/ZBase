@@ -8,9 +8,9 @@
 int
 main(int argc, char *argv[])
 {
-	base64EncodeFile("before_compress", "b64_before_compress");
-	compressEncodeFile("b64_before_compress", "after_compress");
-	compressDecodeFile("after_compress", "b64_before_compress");
-	base64DecodeFile("b64_before_compress", "before_compress");
+	base64EncodeFile("test.png", "test.txt");
+//	compressEncodeFile("b64_before_compress", "after_compress");
+//	compressDecodeFile("after_compress", "b64_before_compress");
+//	base64DecodeFile("b64_before_compress", "before_compress");
         return 0;
 }
