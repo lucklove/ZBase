@@ -1,0 +1,68 @@
+void *
+func2()
+{
+ while(1) {
+  if(!_setjmp (__ex_jmp_buffer) && __push_jmp_point()) {
+   spinLock(&lock);
+   struct ZObjInstance *err = zNewInstance("base_error", "error in func2\n");
+   spinUnlock(&lock);
+   __throw(err);
+  } else if(zGetInstance(__get_cur_error(), "base_error")) { struct ZObjInstance *ins = __get_cur_error(); {
+   printf("err catch %p in func2\n", ins);
+   spinLock(&lock);
+   ((struct ErrorClass *)zGetClassByInstance(ins, "base_error"))->deal_error(ins);
+   zDesInstance(ins);
+  } } __pop_jmp_point(); {
+   printf("func2 error finnaly\n");
+debug_record(pthread_self(), "exception_test.c", 69);
+debug_stat();
+  };
+ }
+ return ((void *)0);
+}
+
+void *
+func1()
+{
+ while(1) {
+  if(!_setjmp (__ex_jmp_buffer) && __push_jmp_point()) {
+   __throw(zNewInstance("base_error", "error in func1\n"));
+debug_record(pthread_self(), "exception_test.c", 82);
+debug_stat();
+  } else if(zGetInstance(__get_cur_error(), "base_error")) { struct ZObjInstance *ins = __get_cur_error(); {
+debug_record(pthread_self(), "exception_test.c", 85);
+debug_stat();
+   printf("err catch %p in func1\n", ins);
+debug_record(pthread_self(), "exception_test.c", 88);
+debug_stat();
+   spinLock(&lock);
+   ((struct ErrorClass *)zGetClassByInstance(ins, "base_error"))->deal_error(ins);
+debug_record(pthread_self(), "exception_test.c", 92);
+debug_stat();
+   zDesInstance(ins);
+   spinUnlock(&lock);
+debug_record(pthread_self(), "exception_test.c", 96);
+debug_stat();
+  } } __pop_jmp_point(); {
+   printf("func1 error finnaly\n");
+   sleep(1);
+  };
+ }
+ return ((void *)0);
+}
+
+int
+main(int argc, char *argv[])
+{
+ zObjInit();
+ debug_init(2);
+ exceptionInit(pthread_self);
+ pthread_t tid1, tid2;
+ struct ErrorClass error_class = { handle };
+ zRegistClass("base_error", ((void *)0), cons, des, sizeof(struct ErrorIns), &error_class, sizeof(error_class));
+ pthread_create(&tid1, ((void *)0), func1, ((void *)0));
+ pthread_create(&tid2, ((void *)0), func2, ((void *)0));
+ pthread_join(tid1, ((void *)0));
+ pthread_join(tid2, ((void *)0));
+ return 0;
+}

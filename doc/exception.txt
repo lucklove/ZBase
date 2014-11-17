@@ -1,0 +1,15 @@
+
+  |
+  |
+  |
+  |
+  | ---------------------------->
+  |^  			^
+  ||  			|________ stack(store jmp_buf info)
+  ||___________ head(contain a stack)
+  | 
+  |
+  
+  ^
+  |
+  |___________ rb_tree(every thread a node)

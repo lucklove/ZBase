@@ -3,7 +3,6 @@
 #include "rb_tree.h"
 #include "container.h"
 #include "opt.h"
-#include "bits.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -330,6 +329,8 @@ zGetClassByInstance(struct ZObjInstance *ins, const char *class_name)
 void *
 zGetInstance(struct ZObjInstance *ins, const char *class_name)
 {
+	if(ins == NULL)
+		return NULL;
 	if(class_name != NULL) {
 		while(strcmp(ins->class->class_name, class_name) != 0) {
 			if(ins->class->parent == NULL) {

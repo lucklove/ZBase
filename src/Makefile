@@ -32,10 +32,15 @@ SORT_TEST_OBJS = sort_test.o sort.o
 
 SPIN_TEST_OBJS = spin.o spin_test.o
 
+EXCEPTION_TEST_OBJS = exception.o exception_test.o rb_tree.o zobject.o mem.o spin.o
+
 .c.o:
 	$(CC) -c $(CFLAGS) $*.c
 
-all: compress_test bits_test rb_test hm_test base64_test random_test fsm_test mem_test json_test ref_test opt_test matrix_test zobj_test sort_test
+all: compress_test bits_test rb_test hm_test base64_test random_test fsm_test mem_test json_test ref_test opt_test matrix_test zobj_test sort_test exception_text
+
+exception_test: $(EXCEPTION_TEST_OBJS)
+	$(CC) $(CFLAGS) -o $@ $(EXCEPTION_TEST_OBJS) -lpthread
 
 spin_test: $(SPIN_TEST_OBJS)
 	$(CC) $(CFLAGS) -o $@ $(SPIN_TEST_OBJS) -lpthread
@@ -86,4 +91,4 @@ hm_test: $(HM_TEST_OBJS)
 	$(CC) $(CLFAGS) -o $@ $(HM_TEST_OBJS)
 
 clean:
-	$(RM) -f *.o compress_test bits_test rb_test hm_test base64_test mem_test fsm_test json_test random_test ref_test opt_test zobj_test matrix_test sort_test spin_test
+	$(RM) -f *.o compress_test bits_test rb_test hm_test base64_test mem_test fsm_test json_test random_test ref_test opt_test zobj_test matrix_test sort_test spin_test exception_test

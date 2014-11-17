@@ -16,6 +16,7 @@ debug_init(int pth_num)
 	debug_file = fopen(DEBUG_FILE, "w");
 	assert(debug_file != NULL);
 	d_list = malloc(sizeof(struct debug_t) * pth_num);
+	memset(d_list, 0, sizeof(struct debug_t) * pth_num);
 	pth_number = pth_num;
 }
 
@@ -39,6 +40,8 @@ debug_stat()
 		if(d_list[i].key != 0) {
 			printf("pth:%ld\tfile:%s\tline:%d\n",
 				d_list[i].key, d_list[i].file, d_list[i].line);
+		} else {
+			printf("unused key\n");
 		}
 	}
 }

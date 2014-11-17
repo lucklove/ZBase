@@ -1,5 +1,4 @@
 #include "list.h"
-#define NULL ((void *)0)
 
 static inline void
 __list_add(struct list_node *new, struct list_node *prev, struct list_node *next)
