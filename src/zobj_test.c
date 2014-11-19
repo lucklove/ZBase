@@ -1,6 +1,8 @@
 #include "zobject.h"
 #include "mem.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 
 struct anamal_class {
@@ -95,7 +97,9 @@ fish_cons(void *ins, void *data)
 {
 	struct fish_instance *instance = ins;
 	instance->size = 2;
-	return data;
+	char *p = malloc(strlen(data) + 1);
+	strcpy(p, data);
+	return p;
 }
 
 static void
@@ -115,7 +119,9 @@ dog_cons(void *ins, void *data)
 {
 	struct dog_instance *instance = ins;
 	instance->speed = 3.5;
-	return data;
+	char *p = malloc(strlen(data) + 1);
+	strcpy(p, data);
+	return p;
 }
 
 static void

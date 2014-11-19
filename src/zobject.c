@@ -1,3 +1,8 @@
+/**************************************************************************
+ * zobject.c                                                              * 
+ * Copyright (C) 2014 Joshua <gnu.crazier@gmail.com>                      *
+ **************************************************************************/
+
 #include "zobject.h"
 #include "mem.h"
 #include "rb_tree.h"
@@ -8,22 +13,24 @@
 #include <stdlib.h>
 #include <assert.h>
 
+/** translate RBNode addr to struct ZObjClass addr. */
 #define to_class(node) container_of(node, struct ZObjClass, rb_node)
+
+/** translate RBNode addr to struct InterfaceInfo addr. */
 #define to_interface(node) container_of(node, struct InterfaceInfo, rb_node)
 
+/** interface info. */
 struct InterfaceInfo {
 	const char *interface_name;
-//	struct InterfaceInfo *parent;
 	mem_t parents;
 	unsigned int struct_size;
 	struct RBNode rb_node;
 };
 	
-// 保存类型
+/** red black tree for class and interface */
 static RBTree class_tree;
 static RBTree interface_tree;
 
-//need by makeRBTree()
 static void *
 get_class(struct RBNode *node)
 {
@@ -36,7 +43,6 @@ get_interface(struct RBNode *node)
 	return to_interface(node);
 }
 	
-//need by makeRBTree()
 static int
 cmp_class(void *n1, void *n2)
 {
@@ -51,7 +57,6 @@ cmp_interface(void *n1, void *n2)
 		((struct InterfaceInfo *)n2)->interface_name);
 }
 
-//need by makeRBTree()
 static struct RBNode *
 make_class(void *class_info)
 {
@@ -70,7 +75,6 @@ make_interface(void *interface_info)
 	return &info->rb_node;
 }
 
-//need by makeRBTree()
 static void
 free_class(struct RBNode *node)
 {
@@ -83,7 +87,7 @@ free_interface(struct RBNode *node)
 	free(to_interface(node));
 }
 
-//init object system
+/** init object system. */
 void
 zObjInit()
 {
@@ -91,7 +95,7 @@ zObjInit()
 	interface_tree = makeRBTree(get_interface, cmp_interface, make_interface, free_interface);
 }
 
-//find class in rb_tree by class name
+/** find class in red black tree by class name. */
 static struct ZObjClass *
 find_class(const char *name)
 {
@@ -102,6 +106,7 @@ find_class(const char *name)
 	return to_class(node);
 }
 
+/** find interface info in red black tree by interface name. */
 static struct InterfaceInfo *
 find_interface(const char *name)
 {
@@ -290,8 +295,11 @@ construct_instance(struct ZObjClass *class, void *data)
 	assert(instance->instance_body != NULL);
 	memset(instance->instance_body, 0, class->instance_size);
 	void *parent_data = class->constructor(instance->instance_body, data);
-	if(class->parent != NULL)
+	if(class->parent != NULL) {
 		instance->parent = construct_instance(class->parent, parent_data);
+		if(parent_data != NULL)
+			free(parent_data);
+	}
 	return instance;
 }					
 

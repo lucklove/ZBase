@@ -1,3 +1,8 @@
+/**************************************************************************
+ * exception.c                                                            * 
+ * Copyright (C) 2014 Joshua <gnu.crazier@gmail.com>                      *
+ **************************************************************************/
+
 #include "exception.h"
 #include "rb_tree.h"
 #include "container.h"
@@ -8,23 +13,29 @@
 
 #define cur_thread (get_cur_thread ? get_cur_thread() : 0)
 
+/** thread identifier. */
 static unsigned long (*get_cur_thread)(void) = NULL;
+
+/** implement muti thread safe. */
 spin_lock_t spin_lk = INIT_SPIN_LOCK;
 
 struct stack_node {
-	jmp_buf jb;
-	struct stack_node *prev;
+	jmp_buf jb;				/**< to save jmp_buf. */
+	struct stack_node *prev;		/**< to push this struct on stack. */
 };
 
+/** stack info. */
 struct stack_type {
-	unsigned long thread_id;
+	unsigned long thread_id;		/**< for miti thread safe. */
 	struct stack_node *stack_top;
-	struct ZObjInstance *cur_error;
-	struct RBNode rb_node;
+	struct ZObjInstance *cur_exception;	/**< current exception on this thread. */
+	struct RBNode rb_node;			/**< to store this struct in red black tree. */
 } ;
 
+/** the red black tree */
 static RBTree stack_tree;
 
+/** translate rb_node addr to stack_type addr. */
 #define to_stack(node) container_of(node, struct stack_type, rb_node)
 
 static void *
@@ -51,7 +62,7 @@ make_new_stack(void *id)
 	struct stack_type *stack = malloc(sizeof(struct stack_type));
 	stack->thread_id = *(unsigned long *)id;
 	stack->stack_top = NULL;
-	stack->cur_error = NULL;
+	stack->cur_exception = NULL;
 	return &stack->rb_node;
 }
 
@@ -91,14 +102,14 @@ __pop_jmp_point()
 }	
 
 struct ZObjInstance *
-__get_cur_error()
+__get_cur_exception()
 {
 	unsigned long thread_id = cur_thread;
 	spinLock(&spin_lk);
 	struct RBNode *stack = rbSearch(stack_tree, &thread_id);
 	spinUnlock(&spin_lk);
-	assert(to_stack(stack)->cur_error != NULL);
-	return to_stack(stack)->cur_error;
+	assert(to_stack(stack)->cur_exception != NULL);
+	return to_stack(stack)->cur_exception;
 }
 
 void
@@ -108,6 +119,6 @@ __throw(struct ZObjInstance *e)
 	spinLock(&spin_lk);
 	struct RBNode *stack = rbSearch(stack_tree, &thread_id);
 	spinUnlock(&spin_lk);
-	to_stack(stack)->cur_error = e;
+	to_stack(stack)->cur_exception = e;
 	longjmp(to_stack(stack)->stack_top->jb, 1);
 }

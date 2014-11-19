@@ -1,0 +1,20 @@
+class constructor:
+/**
+ * \brief class constructor.
+ * \note 
+ *      the return vaule must can be free, and CAN NOT be the same
+ *	or part of the param data.
+ */
+void *
+constructor(void *instance, void *data)
+{
+	do_some_thing(instance, data);
+	if(want to construct parent with NULL) {
+		return NULL;			/**< use NULL to construct parent. */
+	} else {
+		void *p = malloc(size_of_information);
+		do_some_thing(p);
+		return p;			/**< use p to construct parent. */
+	}
+}
+			

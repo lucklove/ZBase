@@ -20,7 +20,7 @@
 #define rethrow() 						\
 do {								\
 	__pop_jmp_point();					\
-	__throw(__get_cur_error());				\
+	__throw(__get_cur_exception());				\
 } while(0)
 
 /**
@@ -40,8 +40,8 @@ do {								\
 #define try if(!setjmp(__push_jmp_point()))
 
 #define catch(instance, class_name)				\
-    else if(zGetInstance(__get_cur_error(), class_name)) {	\
-	struct ZObjInstance *instance = __get_cur_error();
+    else if(zGetInstance(__get_cur_exception(), class_name)) {	\
+	struct ZObjInstance *instance = __get_cur_exception();
 	
 #define otherwise } else {
 
@@ -49,12 +49,12 @@ do {								\
 
 /**
  * \note the fellow functions, include __push_jmp_point, __pop_jmp_point,
- * 	 __get_cur_error, __throw, are used by micro, and they should never 
- * 	 be used directly by user!!!
+ * 	 __get_cur_exception, __throw, are used by micro, and they should 
+ * 	 never be used directly by user!!!
  */
 void * __push_jmp_point(void);
 void __pop_jmp_point(void);
-struct ZObjInstance *__get_cur_error(void);
+struct ZObjInstance *__get_cur_exception(void);
 void __throw(struct ZObjInstance *);
 
 /**
