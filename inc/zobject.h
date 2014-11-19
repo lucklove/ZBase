@@ -6,6 +6,8 @@
 #pragma once
 
 #include "mem.h"
+#include "ref.h"
+#include "exception.h"
 #include "rb_tree.h"
 #include <stdbool.h>
 #include <stdlib.h>
@@ -26,6 +28,7 @@ struct ZObjInstance {
 	struct ZObjClass *class;	/**< class which this instance belong to. */
 	struct ZObjInstance *parent;	/**< parent instance. */
 	void *instance_body;		/**< user's struct body. */
+	ref_t ref_node;			/**< refrence count. */
 };
 
 struct ZObjInterface {
@@ -35,9 +38,13 @@ struct ZObjInterface {
 
 /**
  * \brief Init object system
+ * \param thread_identifer 
+ * 	The fuction is given to exception system, so that the system can 
+ * 	identify diffrent thread. This if for thread safe, if you use 
+ * 	single thread or will not use exception, then you can pass NULL.
  * \note This should be called before any other opreation of object system
  */
-void zObjInit(void);
+void zObjInit(unsigned long (*thread_identifier)(void));
 
 /**
  * \brief Find prarent(or self)'s class body
@@ -125,8 +132,25 @@ bool zInterfaceAddParent(const char *self_name, const char *parent_name);
 struct ZObjInstance *zNewInstance(const char *class_name, void *data);
 
 /**
- * \brief Destroy an instance, call user's destructor and free resource of this instance.
- * \param instance The instance you want to destroy.
+ * \brief Increase an instance's refrence counter so that you can 
+ * 	pass it to other thread.
+ * \param instance The instance you want to pass.
+ */
+void zObjIncRef(struct ZObjInstance *instance);
+
+/**
+ * \brief 
+ * 	Decrease an instance's refrence counter, if the counter reach 0, 
+ * 	call user's destructor and free resource of this instance.
+ * \param instance The instance you want to throw away.
+ */
+void zObjDecRef(struct ZObjInstance *instance);
+
+/**
+ * \brief 
+ * 	Decrease an instance's refrence counter, if the counter reach 0, 
+ * 	call user's destructor and free resource of this instance.
+ * \param instance The instance you want to throw away.
  */
 void zDesInstance(struct ZObjInstance *instance);
 

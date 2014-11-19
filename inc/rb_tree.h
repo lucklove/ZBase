@@ -27,8 +27,8 @@ bool		rbInsert(RBTreePtr, void *);
 void		rbDelete(RBTreePtr, void *);
 struct RBNode*	rbSearch(RBTree, void *);
 
-struct RBNode* rbGetRoot(RBTree);
-
+struct 	RBNode* rbGetRoot(RBTree);
+void 	rbSetReleaseFunc(RBTreePtr tree, void (*releaseFunc)(struct RBNode *));
 RBTree 	makeRBTree(void *(*)(struct RBNode *), int (*)(void *, void *),		\
 	struct RBNode *(*)(void *key),						\
 	void    (*)(struct RBNode *));

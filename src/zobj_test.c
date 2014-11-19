@@ -1,5 +1,6 @@
 #include "zobject.h"
 #include "mem.h"
+#include "debug.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -74,7 +75,7 @@ static void
 fish_swim(struct ZObjInstance *ins)
 {
 	Z_OBJ_TO_CLASS(ins, "anamal", struct anamal_class)->who_are_you(ins);
-	printf("I am %d and I can swim\n", Z_OBJ_TO_INSTANCE(ins, "fish", struct fish_instance)->size);
+	printf("I am sized %d and I can swim\n", Z_OBJ_TO_INSTANCE(ins, "fish", struct fish_instance)->size);
 }
 
 static void
@@ -163,7 +164,7 @@ tell(struct ZObjInstance *ins)
 int
 main(int argc, char *argv[])
 {
-	zObjInit();
+	zObjInit(NULL);
 	test_init();
 	struct ZObjInstance *ins = zNewInstance("anamal", "aiai");
 	tell(ins);	
@@ -174,6 +175,6 @@ main(int argc, char *argv[])
 	Z_OBJ_TO_CLASS(ins, NULL, struct fish_class)->swim(ins);
 	Z_OBJ_TO_INTERFACE(ins, "eat", struct eat_interface)->eat();
 	Z_OBJ_TO_INTERFACE(ins, "slow_eat", struct slow_eat_interface)->slow_eat();
-	zDesInstance(ins);	
+	zObjDecRef(ins);	
 	return 0;
 }

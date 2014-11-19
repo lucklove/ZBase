@@ -24,7 +24,7 @@ REF_TEST_OBJS = ref.o ref_test.o
 
 OPT_TEST_OBJS = opt_test.o
 
-ZOBJ_TEST_OBJS = zobject.o zobj_test.o mem.o rb_tree.o
+ZOBJ_TEST_OBJS = zobject.o zobj_test.o mem.o rb_tree.o ref.o exception.o spin.o
 
 MATRIX_TEST_OBJS = matrix.o matrix_test.o mem.o rb_tree.o
 
@@ -32,7 +32,7 @@ SORT_TEST_OBJS = sort_test.o sort.o
 
 SPIN_TEST_OBJS = spin.o spin_test.o
 
-EXCEPTION_TEST_OBJS = exception.o exception_test.o rb_tree.o zobject.o mem.o spin.o
+EXCEPTION_TEST_OBJS = exception.o exception_test.o rb_tree.o zobject.o mem.o spin.o ref.o
 
 .c.o:
 	$(CC) -c $(CFLAGS) $*.c

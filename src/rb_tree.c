@@ -494,6 +494,12 @@ rbGetRoot(RBTree tree)
         return tree.rb_node;
 }
 
+void
+rbSetReleaseFunc(RBTreePtr tree, void (*releaseFunc)(struct RBNode *))
+{
+	tree->freeNode = releaseFunc;
+}
+
 bool
 rbInsert(RBTreePtr tree, void *key)
 {

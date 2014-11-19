@@ -56,13 +56,3 @@ void * __push_jmp_point(void);
 void __pop_jmp_point(void);
 struct ZObjInstance *__get_cur_exception(void);
 void __throw(struct ZObjInstance *);
-
-/**
- * \brief Init exception system.
- * \param thread_identifer 
- *        The fuction given to exception system, so that 
- * 	  the system can identify diffrent thread. This if for thread safe, 
- * 	  if you use single thread, you can pass NULL.
- * \example exceptionInit(pthread_self);
- */ 
-void exceptionInit(unsigned long (*thread_identifier)(void));

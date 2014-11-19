@@ -1,7 +1,8 @@
 #include "spin.h"
-#include "exception.h"
+#include "zobject.h"
 #include <stdio.h>
 #include <pthread.h>
+#include <unistd.h>
 
 struct ErrorClass {
 	void (*deal_error)(struct ZObjInstance *, const char *);
@@ -21,6 +22,7 @@ cons(void *ins, void *data)
 void
 des(void *ins)
 {
+	printf("base error destructor called\n");
 }
 
 void
@@ -65,8 +67,7 @@ func1()
 int
 main(int argc, char *argv[])
 {
-	zObjInit();
-	exceptionInit(pthread_self);
+	zObjInit(pthread_self);
 	pthread_t tid1, tid2;
 	struct ErrorClass error_class = { handle };
 	zRegistClass("base_error", NULL, cons, des, sizeof(struct ErrorIns), &error_class, sizeof(error_class));

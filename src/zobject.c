@@ -19,6 +19,37 @@
 /** translate RBNode addr to struct InterfaceInfo addr. */
 #define to_interface(node) container_of(node, struct InterfaceInfo, rb_node)
 
+/** translate ref_t addr to struct ZObjInstance addr. */
+#define to_instance(node) container_of(node, struct ZObjInstance, ref_node)
+
+/**
+ * \brief Init exception system.
+ * \param thread_identifer 
+ *        The fuction given to exception system, so that 
+ *        the system can identify diffrent thread. This if for thread safe, 
+ *        if you use single thread, you can pass NULL.
+ * \example __exception_init(pthread_self);
+ * \see exception.c
+ */ 
+void __exception_init(unsigned long (*thread_identifier)(void));
+
+/**
+ * \brief
+ * 	Instert insance to exception stack, so that the exception
+ * 	system can release these instance if any exception occured.
+ * \see exception.c
+ */
+void __exception_insert_instance(struct zObjInstance *instance);
+
+/**
+ * \brief
+ * 	Delete instance from exception stack, for these instance have
+ * 	been released by user or be send to other thread so they can 
+ * 	never be released by exception system.
+ * \see exception.c
+ */
+void __exception_delete_instance(struct zObjInstance *instance);
+
 /** interface info. */
 struct InterfaceInfo {
 	const char *interface_name;
@@ -89,10 +120,11 @@ free_interface(struct RBNode *node)
 
 /** init object system. */
 void
-zObjInit()
+zObjInit(unsigned long (*thread_identifier)(void))
 {
 	class_tree = makeRBTree(get_class, cmp_class, make_class, free_class);
 	interface_tree = makeRBTree(get_interface, cmp_interface, make_interface, free_interface);
+	__exception_init(thread_identifier);
 }
 
 /** find class in red black tree by class name. */
@@ -303,19 +335,8 @@ construct_instance(struct ZObjClass *class, void *data)
 	return instance;
 }					
 
-struct ZObjInstance *
-zNewInstance(const char *class_name, void *data)
-{
-	struct ZObjClass *dst_class = find_class(class_name);
-	if(dst_class == NULL) {
-		printf("CRITICAL: class %s not found.\n", class_name);
-		return NULL;
-	}
-	return construct_instance(dst_class, data);
-}
-
-void
-zDesInstance(struct ZObjInstance *ins)
+static void
+destroy_instance(struct ZObjInstance *ins)
 {
 	if(ins->parent != NULL)
 		zDesInstance(ins->parent); 
@@ -325,6 +346,47 @@ zDesInstance(struct ZObjInstance *ins)
 	}
 }
 
+static void
+release_instance(ref_t *ref)
+{
+	struct ZObjInstance *ins = to_instance(ref);
+	destroy_instance(ins);
+}
+	
+struct ZObjInstance *
+zNewInstance(const char *class_name, void *data)
+{
+	struct ZObjClass *dst_class = find_class(class_name);
+	if(dst_class == NULL) {
+		printf("CRITICAL: class %s not found.\n", class_name);
+		return NULL;
+	}
+	struct ZObjInstance *instance = construct_instance(dst_class, data);
+	instance->ref_node = makeRef(release_instance);
+	__exception_insert_instance(instance);
+	return instance;
+}
+
+void
+zObjIncRef(struct ZObjInstance *instance)
+{
+	__exception_delete_instance(instance);	
+	refGet(&instance->ref_node);
+}
+
+void
+zObjDecRef(struct ZObjInstance *instance)
+{
+	__exception_delete_instance(instance);	
+	refPut(&instance->ref_node);
+}
+
+void
+zDesInstance(struct ZObjInstance *instance)
+{
+	refPut(&instance->ref_node);
+}
+	
 void *
 zGetClassByName(const char *self, const char *class_name)
 {
