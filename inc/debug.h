@@ -10,7 +10,7 @@
 #define M(ptr)
 #define F(ptr)
 #else
-#define D fprintf(stderr, "file:%s, line:%d\n", __FILE__, __LINE__);
+#define D fprintf(stdout, "file:%s, line:%d\n", __FILE__, __LINE__);
 #define R debug_record(pthread_self(), __FILE__, __LINE__);
 #define S debug_stat();
 #define M(ptr) debug_mem_new(__FILE__, __LINE__, ptr);

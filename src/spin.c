@@ -1,5 +1,4 @@
 #include "spin.h"
-#include "debug.h"
 #include <stdatomic.h>
 
 void

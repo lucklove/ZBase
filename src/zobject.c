@@ -3,6 +3,7 @@
  * Copyright (C) 2014 Joshua <gnu.crazier@gmail.com>                      *
  **************************************************************************/
 
+#include "debug.h"
 #include "zobject.h"
 #include "mem.h"
 #include "rb_tree.h"
@@ -39,7 +40,7 @@ void __exception_init(unsigned long (*thread_identifier)(void));
  * 	system can release these instance if any exception occured.
  * \see exception.c
  */
-void __exception_insert_instance(struct zObjInstance *instance);
+void __exception_insert_instance(struct ZObjInstance *instance);
 
 /**
  * \brief
@@ -48,7 +49,7 @@ void __exception_insert_instance(struct zObjInstance *instance);
  * 	never be released by exception system.
  * \see exception.c
  */
-void __exception_delete_instance(struct zObjInstance *instance);
+void __exception_delete_instance(struct ZObjInstance *instance);
 
 /** interface info. */
 struct InterfaceInfo {
@@ -339,7 +340,7 @@ static void
 destroy_instance(struct ZObjInstance *ins)
 {
 	if(ins->parent != NULL)
-		zDesInstance(ins->parent); 
+		destroy_instance(ins->parent); 
 	if(ins->class->destructor) {
 		ins->class->destructor(ins->instance_body);
 		free(ins->instance_body);
@@ -384,6 +385,7 @@ zObjDecRef(struct ZObjInstance *instance)
 void
 zDesInstance(struct ZObjInstance *instance)
 {
+	__exception_delete_instance(instance);	
 	refPut(&instance->ref_node);
 }
 	

@@ -21,13 +21,13 @@ get_ptr(struct RBNode *p)
         return container_of(p, struct mem_debug_node, rb_node)->ptr;
 }
 
-int
+static int
 cmp_ptr(void *p1, void *p2)
 {
         return (char *)p1 - (char *)p2;
 }
 
-struct RBNode *
+static struct RBNode *
 make_debug_node(void *ptr)
 {
         struct mem_debug_node *tmp = malloc(sizeof(struct mem_debug_node));
@@ -35,7 +35,7 @@ make_debug_node(void *ptr)
         return &tmp->rb_node;
 }
 
-void
+static void
 free_debug_node(struct RBNode *node)
 {
         free(container_of(node, struct mem_debug_node, rb_node));

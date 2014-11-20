@@ -110,7 +110,6 @@ static void
 release_instance_info(struct RBNode *node)
 {
 	struct ZObjInstance *instance = to_instance_info(node)->instance;
-	printf("release\n");
 	zDesInstance(instance);
 	free(to_instance_info(node));
 }
@@ -148,9 +147,9 @@ __pop_jmp_point()
 	spinUnlock(&spin_lk);
 	struct stack_node *node = to_stack(stack)->stack_top;
 	assert(node != NULL);
-	to_stack(stack)->stack_top = node->prev;
 	rbSetReleaseFunc(&node->instance_tree, release_instance_info);
 	destroyRBTree(node->instance_tree);
+	to_stack(stack)->stack_top = node->prev;
 	free(node);
 }	
 
@@ -177,7 +176,9 @@ __exception_delete_instance(struct ZObjInstance *instance)
 	if(stack == NULL)
 		return;
 	struct stack_node *node = to_stack(stack)->stack_top;
+	void (*old_free_func)(struct RBNode *) = rbSetReleaseFunc(&node->instance_tree, NULL);
 	rbDelete(&node->instance_tree, instance);
+	rbSetReleaseFunc(&node->instance_tree, old_free_func);
 }
 
 struct ZObjInstance *

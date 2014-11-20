@@ -2,7 +2,6 @@
 #include "zobject.h"
 #include <stdio.h>
 #include <pthread.h>
-#include <unistd.h>
 
 struct ErrorClass {
 	void (*deal_error)(struct ZObjInstance *, const char *);

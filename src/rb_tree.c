@@ -470,14 +470,12 @@ makeRBTree(void *(*getKey)(struct RBNode *), int (*cmpKey)(void *, void *),
 }
 
 static void
-destroyTree(struct RBNode *tree, void (*freeFunc)(struct RBNode *))
+destroy_tree(struct RBNode *tree, void (*freeFunc)(struct RBNode *))
 {
         if(tree == NULL)
                 return;
-        if(tree->rb_left != NULL)
-                destroyTree(tree->rb_left, freeFunc);
-        if(tree->rb_right != NULL)
-                destroyTree(tree->rb_right, freeFunc);
+	destroy_tree(tree->rb_left, freeFunc);
+	destroy_tree(tree->rb_right, freeFunc);
         freeFunc(tree);
 }
 
@@ -485,7 +483,7 @@ void
 destroyRBTree(RBTree tree)
 {
         if(tree.freeNode)
-                destroyTree(tree.rb_node, tree.freeNode);
+                destroy_tree(tree.rb_node, tree.freeNode);
 }
 
 struct RBNode *
@@ -494,10 +492,12 @@ rbGetRoot(RBTree tree)
         return tree.rb_node;
 }
 
-void
+RBReleaseFunc
 rbSetReleaseFunc(RBTreePtr tree, void (*releaseFunc)(struct RBNode *))
 {
+	void (*old_free_node)(struct RBNode *) = tree->freeNode;
 	tree->freeNode = releaseFunc;
+	return old_free_node;
 }
 
 bool

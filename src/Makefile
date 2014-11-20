@@ -1,6 +1,6 @@
 CC = gcc
 RM = rm
-CFLAGS = -Wall -std=c11 -I../inc -ltcmalloc
+CFLAGS = -Wall -std=c11 -I../inc
 
 MEM_TEST_OBJS = mem.o mem_test.o rb_tree.o
 
@@ -37,7 +37,7 @@ EXCEPTION_TEST_OBJS = exception.o exception_test.o rb_tree.o zobject.o mem.o spi
 .c.o:
 	$(CC) -c $(CFLAGS) $*.c
 
-all: compress_test bits_test rb_test hm_test base64_test random_test fsm_test mem_test json_test ref_test opt_test matrix_test zobj_test sort_test exception_text
+all: compress_test bits_test rb_test hm_test base64_test random_test fsm_test mem_test json_test ref_test opt_test matrix_test zobj_test sort_test exception_test
 
 exception_test: $(EXCEPTION_TEST_OBJS)
 	$(CC) $(CFLAGS) -o $@ $(EXCEPTION_TEST_OBJS) -lpthread
