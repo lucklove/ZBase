@@ -3,6 +3,10 @@
 #include "mem.h"
 #include <stdio.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 enum JsonType { JSON_NONE, JSON_STRING, JSON_BOOL, JSON_NUMBER, JSON_ARRAY, JSON_PAIR };
 
 typedef struct JsonPair {
@@ -19,3 +23,7 @@ const char *jsonGetKey(json_t);
 const char *jsonGetContent(json_t);
 json_t jsonGetVal(json_t, unsigned int);
 unsigned int jsonGetArrayLen(json_t);
+
+#ifdef __cplusplus
+}
+#endif

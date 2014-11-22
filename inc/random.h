@@ -1,9 +1,14 @@
 /**************************************************************************
  * random.h                                                               * 
  * Copyright (C) 2014 Joshua <gnu.crazier@gmail.com>                      *
+ * implemented in random.c						  *
  **************************************************************************/
 
 #pragma once
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** 
  * \brief Set a seed for random number generator.
@@ -16,3 +21,7 @@ void randSeed(unsigned int seed);
  * \return A random interger number.
  */
 unsigned int randGen(void);
+
+#ifdef __cplusplus
+}
+#endif

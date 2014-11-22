@@ -1,9 +1,14 @@
 /**************************************************************************
  * bits.h                                                                 * 
  * Copyright (C) 2014 Joshua <gnu.crazier@gmail.com>                      *
+ * implemented in bits.c						  *
  **************************************************************************/
 
 #pragma once
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** don's ask why. */
 #define BITS_PER_BYTE 8
@@ -36,3 +41,7 @@ int bits_test(void *ptr, unsigned int offset);
  * \param len The buffer's len in byte.
  */
 void bits_dump(void *ptr, unsigned int len);
+
+#ifdef __cplusplus
+}
+#endif

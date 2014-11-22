@@ -1,10 +1,15 @@
 /**************************************************************************
  * spin.h                                                                 * 
  * Copyright (C) 2014 Joshua <gnu.crazier@gmail.com>                      *
+ * implemented in spin.c						  *
  **************************************************************************/
 
 #pragma once
 #include <stdbool.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define INIT_SPIN_LOCK { 0 }
 
@@ -31,3 +36,7 @@ void spinUnlock(spin_lock_t *lock);
  * \return if success, true, else, false.
  */
 bool spinTryLock(spin_lock_t *lock);
+
+#ifdef __cplusplus
+}
+#endif

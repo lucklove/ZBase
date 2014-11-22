@@ -3,6 +3,10 @@
 #include "mem.h"
 #include "rb_tree.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct FSMNode {
 	int state;
 	mem_t events;
@@ -23,3 +27,7 @@ void fsmSetHander(fsm_t_ptr, int, void (*)(int, int, int));
 void fsmLink(fsm_t_ptr, int, int, int);
 void fsmPushEvent(fsm_t_ptr, int);
 void destroyFSMType(fsm_t);
+
+#ifdef __cplusplus
+}
+#endif

@@ -1,11 +1,16 @@
 /**************************************************************************
  * rb_tree.h                                                              * 
  * Copyright (C) 2014 Joshua <gnu.crazier@gmail.com>                      *
+ * implemented in rb_tree.c						  *
  **************************************************************************/
 
 #pragma once
 
 #include <stdbool.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 struct RBNode {
         unsigned long  rb_parent_color;
@@ -35,3 +40,7 @@ RBTree 	makeRBTree(void *(*)(struct RBNode *), int (*)(void *, void *),		\
 	struct RBNode *(*)(void *key),						\
 	void    (*)(struct RBNode *));
 void 	destroyRBTree(RBTree);
+
+#ifdef __cplusplus
+}
+#endif

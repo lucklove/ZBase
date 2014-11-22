@@ -1,6 +1,7 @@
 /**************************************************************************
  * zobject.h                                                              * 
  * Copyright (C) 2014 Joshua <gnu.crazier@gmail.com>			  *
+ * implemented in zobject.c						  *
  **************************************************************************/
 
 #pragma once
@@ -11,6 +12,10 @@
 #include "rb_tree.h"
 #include <stdbool.h>
 #include <stdlib.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** class information. */
 struct ZObjClass {
@@ -222,3 +227,7 @@ int zRegistClass(const char *class_name, const char *parent_name,
  * \example Z_CLASS_TO_CLASS("fish", "anamal", struct Anamal)->sleep = sleep;
  */
 #define Z_CLASS_TO_CLASS(self, name, type) ((type *)zGetClassByName(self, name))
+
+#ifdef __cplusplus
+}
+#endif

@@ -3,6 +3,10 @@
 #include <pthread.h>
 #include <stdio.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef NDEBUG
 #define D
 #define R
@@ -30,3 +34,7 @@ void debug_record(pthread_t, char *, int);
 void debug_stat(void);
 void debug_mem_new(char *, int, void *);
 void debug_mem_free(char *, int, void *);
+
+#ifdef __cplusplus
+}
+#endif

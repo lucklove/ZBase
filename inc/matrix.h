@@ -2,6 +2,10 @@
 
 #include "mem.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct {
 	mem_t array;
 	unsigned int row;
@@ -29,3 +33,7 @@ void matrixAddRow(matrix_t *, unsigned int);
 matrix_t matrixMergeCol(matrix_t, matrix_t);
 void matrixAddCol(matrix_t *, unsigned int);
 void *matrixGetArray(matrix_t);
+
+#ifdef __cplusplus
+}
+#endif

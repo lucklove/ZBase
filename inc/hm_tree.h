@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct HMNode {
 	struct HMNode *left;
 	struct HMNode *right;
@@ -21,3 +25,7 @@ HMSeed makeHMSeed(struct HMNode **, unsigned int, int (*)(const void *, const vo
 HMTree makeHMTree(HMSeed);
 void destroyHMTree(HMTree, void (*)(struct HMNode *));
 struct HMNode *getHMRoot(HMTree);
+
+#ifdef __cplusplus
+}
+#endif

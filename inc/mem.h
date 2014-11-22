@@ -1,9 +1,14 @@
 /**************************************************************************
  * mem.h                                                                  * 
  * Copyright (C) 2014 Joshua <gnu.crazier@gmail.com>                      *
+ * implemented in mem.c							  *
  **************************************************************************/
 
 #pragma once
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define INIT_MEM 0			/**< default init mem size. */
 
@@ -108,3 +113,7 @@ do {										\
 	if((mem_t_ptr)->index < sizeof(type) * (_index + 1))			\
 		setMemIndex(mem_t_ptr, sizeof(type) * (_index + 1));		\
 } while(0)
+
+#ifdef __cplusplus
+}
+#endif

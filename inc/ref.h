@@ -1,11 +1,16 @@
 /**************************************************************************
  * ref.h                                                                  * 
  * Copyright (C) 2014 Joshua <gnu.crazier@gmail.com>                      *
+ * implemented in ref.c							  *
  **************************************************************************/
 
 #pragma once
 
 #include <stdatomic.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** 
  * \brief Refrence type.
@@ -50,3 +55,7 @@ int refGet(ref_t *ref);
  * \return Current refrence count(after this operation).
  */
 int refPut(ref_t *);
+
+#ifdef __cplusplus
+}
+#endif

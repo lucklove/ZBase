@@ -1,6 +1,7 @@
 /**************************************************************************
  * exception.h                                                            * 
  * Copyright (C) 2014 Joshua <gnu.crazier@gmail.com>                      *
+ * implemented in exception.c						  *
  **************************************************************************/
 
 #pragma once
@@ -8,6 +9,10 @@
 #include "zobject.h"
 #include <setjmp.h>
 #include <stdbool.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * \brief throw an exception.
@@ -56,3 +61,7 @@ void * __push_jmp_point(void);
 void __pop_jmp_point(void);
 struct ZObjInstance *__get_cur_exception(void);
 void __throw(struct ZObjInstance *);
+
+#ifdef __cplusplus
+}
+#endif
