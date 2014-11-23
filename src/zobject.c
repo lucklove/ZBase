@@ -3,7 +3,6 @@
  * Copyright (C) 2014 Joshua <gnu.crazier@gmail.com>                      *
  **************************************************************************/
 
-#include "debug.h"
 #include "zobject.h"
 #include "mem.h"
 #include "rb_tree.h"
@@ -63,18 +62,21 @@ struct InterfaceInfo {
 static RBTree class_tree;
 static RBTree interface_tree;
 
+/** \see rb_tree.h. */
 static void *
 get_class(struct RBNode *node)
 {
 	return to_class(node);
 }
 
+/** \see rb_tree.h. */
 static void *
 get_interface(struct RBNode *node)
 {
 	return to_interface(node);
 }
 	
+/** \see rb_tree.h. */
 static int
 cmp_class(void *n1, void *n2)
 {
@@ -82,6 +84,7 @@ cmp_class(void *n1, void *n2)
 		((struct ZObjClass *)n2)->class_name);
 }
 
+/** \see rb_tree.h. */
 static int
 cmp_interface(void *n1, void *n2)
 {
@@ -89,6 +92,7 @@ cmp_interface(void *n1, void *n2)
 		((struct InterfaceInfo *)n2)->interface_name);
 }
 
+/** \see rb_tree.h. */
 static struct RBNode *
 make_class(void *class_info)
 {
@@ -98,6 +102,7 @@ make_class(void *class_info)
 	return &class->rb_node;
 }
 
+/** \see rb_tree.h. */
 static struct RBNode *
 make_interface(void *interface_info)
 {
@@ -107,12 +112,14 @@ make_interface(void *interface_info)
 	return &info->rb_node;
 }
 
+/** \see rb_tree.h. */
 static void
 free_class(struct RBNode *node)
 {
 	free(to_class(node));
 }
 
+/** \see rb_tree.h. */
 static void
 free_interface(struct RBNode *node)
 {
@@ -150,6 +157,7 @@ find_interface(const char *name)
 	return to_interface(node);
 }
 
+/** strip parent from red black tree. */
 static void
 dup_parent_class(struct ZObjClass *self)
 {
@@ -189,6 +197,7 @@ dup_parent_class(struct ZObjClass *self)
 	dup_parent_class(self->parent);
 }
 
+/** make a class which is registed before stand along. */
 static int
 strip_class(const char *self)
 {
@@ -202,6 +211,7 @@ strip_class(const char *self)
 	return 0;
 }
 
+/** \see zobject.h. */
 int	
 zRegistClass(const char *class_name, const char *parent_name, void *(*cons)(void *, void *),
 	void (*des)(void *), unsigned int ins_size, void *class_body, unsigned int size_of_class)
@@ -224,6 +234,7 @@ zRegistClass(const char *class_name, const char *parent_name, void *(*cons)(void
 	return strip_class(class_name);
 }
 
+/** \see zobject.h. */
 bool
 zRegistInterface(const char *interface_name, unsigned int size_of_interface)
 {
@@ -231,6 +242,7 @@ zRegistInterface(const char *interface_name, unsigned int size_of_interface)
 	return rbInsert(&interface_tree, &reg_interface);
 }
 
+/** \see zobject.h. */
 bool
 zInterfaceAddParent(const char *interface_name, const char *parent_name)
 {
@@ -250,6 +262,7 @@ zInterfaceAddParent(const char *interface_name, const char *parent_name)
 	return true;
 }
 	
+/** get a interface's body in given class's given interface. */
 static void *
 get_interface_in_class(const char *class_name, const char *interface_name)
 {
@@ -269,6 +282,7 @@ get_interface_in_class(const char *class_name, const char *interface_name)
 	return NULL;
 }
 
+/** add interface for a class. */
 static void
 add_interface_to_class(struct ZObjClass *dst_class, struct InterfaceInfo *dst_interface)
 {
@@ -284,7 +298,8 @@ add_interface_to_class(struct ZObjClass *dst_class, struct InterfaceInfo *dst_in
 	ADD_ITEM(&dst_class->interfaces, struct ZObjInterface, 
 		((struct ZObjInterface){ dst_interface->interface_name, interface_body }));
 }
-	
+
+/** \see zobject.h. */	
 bool
 zAddInterface(const char *class_name, const char *interface_name)
 {
@@ -302,6 +317,7 @@ zAddInterface(const char *class_name, const char *interface_name)
 	return true;
 }
 
+/** \see zobject.h. */	
 void *
 zGetInterfaceByName(const char *class_name, const char *interface_name)
 {
@@ -311,12 +327,17 @@ zGetInterfaceByName(const char *class_name, const char *interface_name)
 	return ret;
 }
 
+/** \see zobject.h. */	
 void *
 zGetInterfaceByInstance(struct ZObjInstance *ins, const char *interface_name)
 {
 	return zGetInterfaceByName(ins->class->class_name, interface_name);
 }
 
+/** 
+ * Construct instance(include parent isntance),
+ * the constructor given by user will be called.
+ */
 static struct ZObjInstance *
 construct_instance(struct ZObjClass *class, void *data)
 {
@@ -336,6 +357,10 @@ construct_instance(struct ZObjClass *class, void *data)
 	return instance;
 }					
 
+/** 
+ * Destruct instance(include parent isntance),
+ * the destructor given by user will be called.
+ */
 static void
 destroy_instance(struct ZObjInstance *ins)
 {
@@ -347,13 +372,18 @@ destroy_instance(struct ZObjInstance *ins)
 	}
 }
 
+/** 
+ * \brief Nedd by ref.
+ * \see ref.h.
+ */
 static void
 release_instance(ref_t *ref)
 {
 	struct ZObjInstance *ins = to_instance(ref);
 	destroy_instance(ins);
 }
-	
+
+/** \see zobject.h. */	
 struct ZObjInstance *
 zNewInstance(const char *class_name, void *data)
 {
@@ -368,6 +398,7 @@ zNewInstance(const char *class_name, void *data)
 	return instance;
 }
 
+/** \see zobject.h. */	
 void
 zObjIncRef(struct ZObjInstance *instance)
 {
@@ -375,6 +406,7 @@ zObjIncRef(struct ZObjInstance *instance)
 	refGet(&instance->ref_node);
 }
 
+/** \see zobject.h. */	
 void
 zObjDecRef(struct ZObjInstance *instance)
 {
@@ -382,6 +414,7 @@ zObjDecRef(struct ZObjInstance *instance)
 	refPut(&instance->ref_node);
 }
 
+/** \see zobject.h. */	
 void
 zDesInstance(struct ZObjInstance *instance)
 {
@@ -389,6 +422,7 @@ zDesInstance(struct ZObjInstance *instance)
 	refPut(&instance->ref_node);
 }
 	
+/** \see zobject.h. */	
 void *
 zGetClassByName(const char *self, const char *class_name)
 {
@@ -410,6 +444,7 @@ zGetClassByName(const char *self, const char *class_name)
 	return getMemPtr(&dst_class->class_body, 0, 0);
 }
 
+/** \see zobject.h. */	
 void *
 zGetClassByInstance(struct ZObjInstance *ins, const char *class_name)
 {
@@ -418,6 +453,7 @@ zGetClassByInstance(struct ZObjInstance *ins, const char *class_name)
 	return zGetClassByName(ins->class->class_name, class_name);
 }
 
+/** \see zobject.h. */	
 void *
 zGetInstance(struct ZObjInstance *ins, const char *class_name)
 {
