@@ -121,10 +121,10 @@ RBReleaseFunc rbSetReleaseFunc(RBTreePtr tree, void (*releaseFunc)(struct RBNode
 RBTree 	makeRBTree(void *(*getKey)(struct RBNode *), int (*cmpKey)(void *, void *),	\
 	struct RBNode *(*makeNode)(void *key),	void (*freeNode)(struct RBNode *));
 
-/** 
- * Release given RBTree's resource, the freeNode function(if have) 
- * will be called for each node in the tree.
- */ 
+/**
+ * Rlease RBTree's resource, the release function 
+ * of user will be called(if have).
+ */
 void 	destroyRBTree(RBTree);
 
 #ifdef __cplusplus

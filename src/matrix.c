@@ -46,7 +46,7 @@ matrixGet(matrix_t matrix, unsigned int row, unsigned int col)
 }
 
 void
-matrixScale(matrix_t *matrix)
+matrixTranspose(matrix_t *matrix)
 {
 	matrix_t new = makeMatrix(matrixGetCol(*matrix), matrixGetRow(*matrix), NULL);
 	for(int i = 0; i < matrixGetCol(*matrix); ++i) {
