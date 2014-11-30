@@ -2,7 +2,9 @@ MAKE = make
 CD = cd
 
 all:
-	$(CD) src && $(MAKE)
+	$(CD) c && $(MAKE)
+	$(CD) cc && $(MAKE)
 
 clean:
-	$(CD) src && $(MAKE) clean
+	$(CD) c && $(MAKE) clean
+	$(CD) cc && $(MAKE)
