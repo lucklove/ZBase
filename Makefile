@@ -7,4 +7,4 @@ all:
 
 clean:
 	$(CD) c && $(MAKE) clean
-	$(CD) cc && $(MAKE)
+	$(CD) cc && $(MAKE) clean
