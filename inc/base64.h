@@ -28,17 +28,14 @@ base64_t makeBase64Type(void *data, unsigned int data_len);
 /**
  * \brief Encode data in a base64_t.
  * \param b_64 The base64_t which has data to be encoded.
- * \return Another base64_4 which has data encoded.
+ * \return Another base64_t which has data encoded.
  */ 
 base64_t base64Encode(base64_t b_64);
 
 /**
  * \brief Decode data in a base64_t.
  * \param b_64 The base64_t which has data to be decoded.
- * \return Another base64_4 which has data decoded.
- * \warning 
- * 	The param b_64 should have been returned by base64Encode
- * 	or have decode information in b_64.mem.
+ * \return Another base64_t which has data decoded.
  */ 
 base64_t base64Decode(base64_t b_64);
 
