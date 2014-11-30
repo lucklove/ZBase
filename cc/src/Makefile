@@ -8,7 +8,7 @@ CFLAGS = -Wall -std=c11 -I../inc
 
 CXXFLAGS = -Wall -std=c++14 -I../inc
 
-EXPLODE_TEST_OBJS = explode.o explode_test.o
+EXPLODE_TEST_OBJS = explode_test.o
 
 .c.o:
 	$(CC) -c $(CFLAGS) $*.c

@@ -1,5 +1,6 @@
 #include "explode.hh"
 #include <iostream>
+#include <string.h>
 
 using namespace zbase;
 
