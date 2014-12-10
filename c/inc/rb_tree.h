@@ -44,7 +44,8 @@ typedef struct {
         void            *(*getKey)(struct RBNode *); 	/**< get the key in user's struct */
 	/** 
  	 * Compare two key, if the first param > the second, return a int val which > 0,
- 	 * if the first param < the second, return a val which < 0, otherwise, 0.
+ 	 * if the first param < the second, return a val which < 0, otherwise, 0. The second
+ 	 * param of cmpKey is returned by getKey, which is provided by user.
  	 */ 
         int             (*cmpKey)(void *, void *);
 	/**

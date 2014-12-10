@@ -10,16 +10,21 @@ CXXFLAGS = -Wall -std=c++14 -I../inc
 
 EXPLODE_TEST_OBJS = explode_test.o
 
+PARSE_TEST_OBJS = parse_test.o
+
 .c.o:
 	$(CC) -c $(CFLAGS) $*.c
 
 .cxx.o:
 	g++ -c $(CXXFLAGS) $*.cc
 
-all: explode_test
+all: explode_test parse_test
 
 explode_test: $(EXPLODE_TEST_OBJS)
 	g++ $(CXXLFAGS) -o $@ $(EXPLODE_TEST_OBJS)
 
+parse_test: $(PARSE_TEST_OBJS)
+	g++ $(CXXLFAGS) -o $@ $(PARSE_TEST_OBJS)
+
 clean:
-	$(RM) -f *.o explode_test
+	$(RM) -f *.o explode_test parse_test

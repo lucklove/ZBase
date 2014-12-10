@@ -1,4 +1,4 @@
-#include "explode.hh"
+#include "stringtokenizer.hh"
 #include <iostream>
 #include <string.h>
 
@@ -7,10 +7,8 @@ using namespace zbase;
 int
 main(int argc, char *argv[])
 {
-	std::string str{"the quick brown fox over the lazy dog"};
-	std::vector<std::string> v = explode(str, ' ');
-	for(auto n : v)
-		std::cout << n << std::endl;
-
+	StringTokenizer st{"the_quick_brown_fox_over_the_lazy_dog", '_'};
+	while(st.hasMoreTokens())
+		std::cout << st.nextToken() << std::endl;
 	return 0;
 }
