@@ -29,4 +29,4 @@ parse(std::string str)
 	return ret;
 }	
 
-} 		/** namespace zbase */
+} 		/**< namespace zbase */

@@ -44,4 +44,4 @@ private:
 	std::vector<std::string> tokens;
 };
 
-}		/** namespace zbase */
+}		/**< namespace zbase */

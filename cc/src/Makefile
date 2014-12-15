@@ -1,6 +1,6 @@
 CC = gcc
 
-CXX = g++
+CXX = clang++
 
 RM = rm
 
@@ -14,13 +14,23 @@ PARSE_TEST_OBJS = parse_test.o
 
 CONCURRENCY_TEST_OBJS = concurrency_test.o concurrency.o
 
+UTILITY_TEST_OBJS = utility_test.o
+
+LOADFILE_TEST_OBJS = loadfile_test.o
+
 .c.o:
 	$(CC) -c $(CFLAGS) $*.c
 
 .cxx.o:
 	$(CXX) -c $(CXXFLAGS) $*.cc
 
-all: explode_test parse_test concurrency_test
+all: explode_test parse_test concurrency_test utility_test loadfile_test
+
+loadfile_test: $(LOADFILE_TEST_OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $(LOADFILE_TEST_OBJS)
+
+utility_test: $(UTILITY_TEST_OBJS)
+	$(CXX) $(CXXLFAGS) -o $@ $(UTILITY_TEST_OBJS)
 
 explode_test: $(EXPLODE_TEST_OBJS)
 	$(CXX) $(CXXLFAGS) -o $@ $(EXPLODE_TEST_OBJS)
@@ -32,4 +42,4 @@ concurrency_test: $(CONCURRENCY_TEST_OBJS)
 	$(CXX) $(CXXLFAGS) -o $@ $(CONCURRENCY_TEST_OBJS) -lpthread
 	
 clean:
-	$(RM) -f *.o explode_test parse_test concurrency_test
+	$(RM) -f *.o *.txt explode_test parse_test concurrency_test utility_test loadfile_test 

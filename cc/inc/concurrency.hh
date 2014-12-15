@@ -9,25 +9,12 @@
 #include <utility>
 #include <cassert>
 
+#include "utility.hh"		/** for zforward */
+
 namespace zbase
 {
 
-#define zforward(_expr) std::forward<decltype(_expr)>(_expr)
-
-template<typename _type>
-using result_of_t = typename std::result_of<_type>::type;
-
-template<typename _fCallable, typename... _tParams>
-using packed_task_t
-        = std::packaged_task<result_of_t<_fCallable&&(_tParams&&...)>()>;
-
-template<typename _fCallable, typename... _tParams>
-std::shared_ptr<packed_task_t<_fCallable&&, _tParams&&...>>
-pack_shared_task(_fCallable&& f, _tParams&&... args)
-{
-        return std::make_shared<packed_task_t<_fCallable&&, _tParams&&...>>(
-                std::bind(zforward(f), zforward(args)...));
-}
+//#define zforward(_expr) std::forward<decltype(_expr)>(_expr)
 
 /**
  * \brief 线程池。
@@ -36,6 +23,21 @@ pack_shared_task(_fCallable&& f, _tParams&&... args)
  */
 class thread_pool {
 private:
+	template<typename _type>
+	using result_of_t = typename std::result_of<_type>::type;
+
+	template<typename _fCallable, typename... _tParams>
+	using packed_task_t
+        	= std::packaged_task<result_of_t<_fCallable&&(_tParams&&...)>()>;
+
+	template<typename _fCallable, typename... _tParams>
+	std::shared_ptr<packed_task_t<_fCallable&&, _tParams&&...>>
+	pack_shared_task(_fCallable&& f, _tParams&&... args)
+	{
+        	return std::make_shared<packed_task_t<_fCallable&&, _tParams&&...>>(
+                	std::bind(zforward(f), zforward(args)...));
+	}
+
 	std::vector<std::thread> workers;
 	std::queue<std::function<void()>> tasks{};
 	mutable std::mutex queue_mutex{};
@@ -90,7 +92,6 @@ public:
 	 * \pre wait 调用后满足条件变量后置条件；断言：持有锁。
 	 * \warning 需要确保未被停止（未进入析构），否则不保证任务被运行。
 	 * \warning 使用非递归锁，等待时不能再次锁定。
-	 * \since build 538
 	 */
 	template<typename _fWaiter, typename _fCallable, typename... _tParams>
 	std::future<result_of_t<_fCallable&&(_tParams&&...)>>
@@ -240,5 +241,5 @@ public:
 	}
 };
 
-} // namespace zbase;
+} 	/**< namespace zbase */
 
