@@ -71,4 +71,22 @@ println(const _types&... params)
 	fprintln(std::cout, params...);
 }	
 
+template<typename Iter>
+class Iterable {
+public:
+	Iterable(Iter begin_i, Iter end_i) : begin_iter(begin_i), end_iter(end_i) {}
+	Iter begin() { return begin_iter; }
+	Iter end() { return end_iter; }
+private:
+	Iter begin_iter;
+	Iter end_iter;
+};
+	
+template<typename Iter>
+Iterable<Iter>
+each(Iter&& begin, Iter&& end)
+{
+	return Iterable<Iter>(begin, end);
+}
+
 } 		/**< namespace zbase */

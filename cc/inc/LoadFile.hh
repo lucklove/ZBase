@@ -3,6 +3,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <string>
+#include <cstring>
 #include <ios>
 #include <new>
 
@@ -37,7 +38,7 @@ public:
  	 * \return The item number, the item is of _data_type.
  	 * \note This return the item number, not length by char.
  	 */ 
-	unsigned int len() { return item_num; }
+	unsigned int size() { return item_num; }
 	
 	/**
  	 * \brief Get the item at dest postion.
@@ -74,7 +75,8 @@ LoadFile<_data_type>::LoadFile(std::string file_name)
 	file.seekg(0, std::ios::end);
 	item_num = file.tellg() / sizeof(_data_type);
 	file.seekg(0, std::ios::beg);
-	data_ptr = std::malloc(item_num * sizeof(_data_type));
+	data_ptr = std::malloc(item_num * sizeof(_data_type) + 1);
+	memset(data_ptr, 0, item_num * sizeof(_data_type) + 1);
 	if(data_ptr == nullptr) {
 		file.close();
 		throw std::bad_alloc();

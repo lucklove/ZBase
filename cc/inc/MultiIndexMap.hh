@@ -6,6 +6,11 @@
 
 namespace zbase {
 
+/**
+ * \brief Muti index map.
+ * \param _Element_t Elemets' type in map.
+ * \param _Indexs_t Indexs' type in map.
+ */ 
 template<typename _Element_t, typename... _Indexs_t>
 class MultiIndexMap {
 public:

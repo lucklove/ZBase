@@ -8,6 +8,7 @@
 #include "explode.hh"
 #include <string>
 #include <vector>
+#include <regex>
 
 namespace zbase {
 
@@ -40,8 +41,34 @@ public:
 		tokens.erase(tokens.begin());
 		return ret;
 	}
+
+	std::vector<std::string>::iterator begin() { return tokens.begin(); };	
+	std::vector<std::string>::iterator end() { return tokens.end(); };
+	size_t size() { return tokens.size(); }
 private:
 	std::vector<std::string> tokens;
+};
+
+/**
+ *  * \brief Collect all words in a string.
+ *   */
+class WordCollector {
+public:
+/**
+ * \brief Constructor.
+ * \param line Dest string to be collect words.
+ */ 
+	WordCollector(std::string line) 
+	{
+		std::regex r("\\b\\w+\\b");				/**< r must live in for loop. */
+		for(std::sregex_iterator it(line.begin(), line.end(), r), it_end; it != it_end; ++it)
+			word_list.push_back(it->str());
+	}
+	auto begin() { return word_list.begin(); }                      /**< since c++1y */
+	auto end() { return word_list.end(); }                          /**< since c++1y */
+	auto size() { return word_list.size(); }			/**< since c++1y */
+private:
+	std::vector<std::string> word_list;
 };
 
 }		/**< namespace zbase */

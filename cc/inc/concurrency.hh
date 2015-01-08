@@ -14,8 +14,6 @@
 namespace zbase
 {
 
-//#define zforward(_expr) std::forward<decltype(_expr)>(_expr)
-
 /**
  * \brief 线程池。
  * \note 除非另行约定，所有公开成员函数线程安全。
@@ -72,8 +70,7 @@ public:
 			zforward(args)...);
 	}
 
-	size_t
-	size() const;
+	size_t size() const;
 
 	/**
 	 * \warning 非线程安全。
