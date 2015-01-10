@@ -7,9 +7,13 @@
 
 #include <string>
 #include <sstream>
-#include <stdexcept>
+#include "exception.hh"
 
 namespace zbase {
+
+struct ParseError : public Exception {
+	using Exception::Exception;
+};
 
 /**
  * \param T Dest type.
@@ -20,12 +24,12 @@ template<typename T> T
 parse(std::string str)
 {
 	if(str.size() == 0)
-		throw(std::invalid_argument{str});
+		DEBUG_THROW(ParseError, "can't parse to dest type");
 	std::istringstream s{str};
 	T ret;
 	s >> ret;
 	if(!s.eof())
-		throw(std::invalid_argument{str});
+		DEBUG_THROW(ParseError, "can't parse to dest type");
 	return ret;
 }	
 

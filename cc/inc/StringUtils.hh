@@ -12,6 +12,9 @@
 
 namespace zbase {
 
+/**
+ * \brief Split a string by given charactor.
+ */ 
 class StringTokenizer
 {
 public:

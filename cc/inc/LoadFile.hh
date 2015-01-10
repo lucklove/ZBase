@@ -4,10 +4,13 @@
 #include <cstdlib>
 #include <string>
 #include <cstring>
-#include <ios>
-#include <new>
+#include "exception.hh"
 
 namespace zbase {
+
+struct FileOpenError : public Exception {
+	using Exception::Exception;
+};
 
 /**
  * \brief To load dest file in memory at once.
@@ -71,16 +74,16 @@ LoadFile<_data_type>::LoadFile(std::string file_name)
 {
 	std::ifstream file(file_name, std::ios::binary);
 	if(!file)
-		throw std::ios_base::failure("can't open " + file_name);
+		DEBUG_THROW(FileOpenError, "can't open dest file");
 	file.seekg(0, std::ios::end);
 	item_num = file.tellg() / sizeof(_data_type);
 	file.seekg(0, std::ios::beg);
 	data_ptr = std::malloc(item_num * sizeof(_data_type) + 1);
-	memset(data_ptr, 0, item_num * sizeof(_data_type) + 1);
 	if(data_ptr == nullptr) {
 		file.close();
 		throw std::bad_alloc();
 	}
+	memset(data_ptr, 0, item_num * sizeof(_data_type) + 1);
 	file.read(static_cast<char *>(data_ptr), item_num * sizeof(_data_type)); 
 	file.close();
 }
