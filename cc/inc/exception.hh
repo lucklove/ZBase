@@ -17,7 +17,6 @@ public:
 	Exception(const char *pszFile, unsigned long ulLine,
 		const char *pszMessage, unsigned long ulCode = 0) noexcept
 		: xm_pszFile(pszFile), xm_ulLine(ulLine), xm_pszMessage(pszMessage), xm_ulCode(ulCode) {}
-	~Exception() override {};
 
 public:
 	const char *what() const noexcept override {
@@ -41,7 +40,7 @@ public:
 	}
 };
 
-std::ostream& 
+inline std::ostream& 
 operator<<(std::ostream& os, const Exception& e)
 {
 	return os << "Exception in " << e.getFile() << " line: " 

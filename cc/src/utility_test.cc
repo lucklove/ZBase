@@ -1,4 +1,5 @@
 #include "utility.hh"
+#include "StringUtils.hh"
 
 #include <iostream>
 #include <array>
@@ -14,5 +15,6 @@ main(int argc, char *argv[])
 		i = 3;
 	for(auto& i : each(&a[0], &a[3]))
 		std::cout << i << std::endl;
+	std::cout << startsWith("xx", "xx_3322\nxx_3") << std::endl;
 	return 0;
 }

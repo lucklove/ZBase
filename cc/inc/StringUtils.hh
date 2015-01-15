@@ -6,11 +6,21 @@
 #pragma once
 
 #include "explode.hh"
+#include "exception.hh"
 #include <string>
 #include <vector>
 #include <regex>
 
 namespace zbase {
+
+struct TokenError : public Exception {
+	using Exception::Exception;
+};
+
+struct SerializeAble {
+	virtual std::string serialize() = 0;
+	virtual ~SerializeAble() {};
+};
 
 /**
  * \brief Split a string by given charactor.
@@ -40,6 +50,8 @@ public:
  	 */ 
 	std::string nextToken()
 	{
+		if(tokens.empty())
+			DEBUG_THROW(TokenError, "No more tokens");
 		std::string ret = tokens.front();
 		tokens.erase(tokens.begin());
 		return ret;
@@ -73,5 +85,13 @@ public:
 private:
 	std::vector<std::string> word_list;
 };
+
+bool
+startsWith(std::string s, std::string seq)
+{
+	std::regex r("^" + s);
+	std::smatch m;
+	return std::regex_search(seq, m, r);
+}
 
 }		/**< namespace zbase */
