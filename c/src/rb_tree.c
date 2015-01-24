@@ -486,6 +486,14 @@ destroyRBTree(RBTree tree)
                 destroy_tree(tree.rb_node, tree.freeNode);
 }
 
+void
+clearRBTree(RBTreePtr tree)
+{
+        if(tree->freeNode)
+                destroy_tree(tree->rb_node, tree->freeNode);
+	tree->rb_node = NULL;
+}
+
 struct RBNode *
 rbGetRoot(RBTree tree)
 {

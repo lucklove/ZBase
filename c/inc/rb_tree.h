@@ -128,6 +128,13 @@ RBTree 	makeRBTree(void *(*getKey)(struct RBNode *), int (*cmpKey)(void *, void 
  */
 void 	destroyRBTree(RBTree);
 
+/**
+ * \brief Rlease RBTree's resource, and reset the tree.
+ * 	  the release function of user will be called(if have).
+ * \note This can guarantee the tree can be reuse after this call.
+ */
+void	clearRBTree(RBTreePtr tree);
+
 #ifdef __cplusplus
 }
 #endif

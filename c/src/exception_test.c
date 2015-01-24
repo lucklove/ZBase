@@ -66,6 +66,7 @@ func1()
 int
 main(int argc, char *argv[])
 {
+	memDebugInit();
 	zObjInit(pthread_self);
 	pthread_t tid1, tid2;
 	struct ErrorClass error_class = { handle };
@@ -74,5 +75,6 @@ main(int argc, char *argv[])
 	pthread_create(&tid2, NULL, func2, NULL);
 	pthread_join(tid1, NULL);
 	pthread_join(tid2, NULL);
+	memDebugRelease();
 	return 0;
 }
