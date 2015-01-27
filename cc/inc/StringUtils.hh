@@ -65,8 +65,8 @@ private:
 };
 
 /**
- *  * \brief Collect all words in a string.
- *   */
+ * \brief Collect all words in a string.
+ */
 class WordCollector {
 public:
 /**
