@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <sstream>
 
 namespace zbase {
 
@@ -71,6 +72,17 @@ println(const _types&... params)
 	fprintln(std::cout, params...);
 }	
 
+template<typename T>
+std::string
+toString(T&& some_thing)
+{
+	std::string ret;
+	std::stringstream s(ret);
+	s << some_thing;
+	s >> ret;
+	return ret;
+}	
+	
 template<typename Iter>
 class Iterable {
 public:

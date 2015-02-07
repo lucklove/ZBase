@@ -4,7 +4,7 @@ CXX = g++
 
 RM = rm
 
-CFLAGS = -Wall -std=c11 -I../inc
+CFLAGS = -Wall -std=c11 -pedantic -I../inc
 
 CXXFLAGS = -Wall -std=c++14 -I../inc
 

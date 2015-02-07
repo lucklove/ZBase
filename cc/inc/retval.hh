@@ -13,19 +13,19 @@
 namespace zbase {
 
 /**
- * \brief 助手函数，将返对象中的各个值复制到接收对象的各个引用中
+ * \brief 助手函数，将返对象中的各个移动制到接收对象的各个引用中
  * \param rec_tup 接收对象之tuple，存储真实接收者之引用
  * \param ret_tup 返回对象之tuple, 储存返回值副本集合
  * \note 为retval_t设计，不希望在其它地方被调用
  */
 template<typename RecTuple, typename RetTuple, size_t... Is> 
 void 
-copy_retval_helper(RecTuple& rec_tup, RetTuple& ret_tup, 
+move_retval_helper(RecTuple& rec_tup, RetTuple& ret_tup, 
 			std::index_sequence<Is...>) 
 {
 	using swallow = int[];
 	/** 编译时展开求值 */
-	(void)swallow{0, (std::get<Is>(rec_tup) = std::get<Is>(ret_tup), 0)... };
+	(void)swallow{0, (std::get<Is>(rec_tup) = std::move(std::get<Is>(ret_tup)), 0)... };
 }
 
 /**
@@ -44,8 +44,8 @@ public:
 	/**
  	 * \param retval 返回值集合
  	 */ 
-	void operator=(const std::tuple<Types...>& retval) {
-		copy_retval_helper(receiver, retval, 
+	void operator=(std::tuple<Types...>&& retval) {
+		move_retval_helper(receiver, retval, 
 			std::make_index_sequence<sizeof...(Types)>());
 	}
 private:
