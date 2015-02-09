@@ -26,13 +26,18 @@ EXCEPTION_TEST_OBJS = exception_test.o
 
 RETVAL_TEST_OBJS = retval_test.o
 
+HTTP_TEST_OBJS = http.o http_test.o
+
 .c.o:
 	$(CC) -c $(CFLAGS) $*.c
 
 .cxx.o:
 	$(CXX) -c $(CXXFLAGS) $*.cc
 
-all: explode_test parse_test concurrency_test utility_test loadfile_test multiindexmap_test  algorithm_test exception_test retval_test
+all: explode_test parse_test concurrency_test utility_test loadfile_test multiindexmap_test  algorithm_test exception_test retval_test http_test
+
+http_test: $(HTTP_TEST_OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $(HTTP_TEST_OBJS) -lboost_system -lpthread
 
 retval_test: $(RETVAL_TEST_OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $(RETVAL_TEST_OBJS)
@@ -62,4 +67,4 @@ concurrency_test: $(CONCURRENCY_TEST_OBJS)
 	$(CXX) $(CXXLFAGS) -o $@ $(CONCURRENCY_TEST_OBJS) -lpthread
 	
 clean:
-	$(RM) -f *.o *.txt explode_test parse_test concurrency_test utility_test loadfile_test multiindexmap_test algorithm_test exception_test retval_test
+	$(RM) -f *.o *.txt explode_test parse_test concurrency_test utility_test loadfile_test multiindexmap_test algorithm_test exception_test retval_test http_test

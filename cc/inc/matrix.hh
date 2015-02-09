@@ -9,6 +9,8 @@
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 #include "exception.hh"
 
+namespace zbase {
+
 namespace matrix {
 
 using boost::numeric::ublas::prod;
@@ -143,3 +145,5 @@ matrix_t<double> zscore(matrix_t<double> mat);
 matrix_t<double> cov(matrix_t<double> mat);
 
 }	/**< namespace matrix */
+
+}	/**< namespace zbase */
