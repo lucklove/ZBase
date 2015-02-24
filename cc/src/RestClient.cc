@@ -10,8 +10,10 @@ using namespace zbase;
 
 /** initialize user agent string */
 const char* RestClient::user_agent = "zbase::restclient";
+
 /** initialize authentication variable */
 std::string RestClient::user_pass =  std::string();
+
 /** Authentication Methods implementation */
 void 
 RestClient::clearAuth()
@@ -27,19 +29,19 @@ RestClient::setAuth(const std::string& user,const std::string& password)
 }
 
 /**
- * @brief HTTP GET method
+ * \brief HTTP GET method
  *
- * @param url to query
+ * \param url to query
  *
- * @return response struct
+ * \return response struct
  */
-RestClient::response 
+RestClient::response_t
 RestClient::get(const std::string& url)
 {
 	/** create return struct */
-	RestClient::response ret = {};
+	RestClient::response_t ret = {};
 
-  	// use libcurl
+  	/** use libcurl */
   	CURL *curl = NULL;
   	CURLcode res = CURLE_OK;
 
@@ -50,18 +52,25 @@ RestClient::get(const std::string& url)
 			curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 			curl_easy_setopt(curl, CURLOPT_USERPWD, RestClient::user_pass.c_str());
 		}
+
 		/** set user agent */
 		curl_easy_setopt(curl, CURLOPT_USERAGENT, RestClient::user_agent);
+
 		/** set query URL */
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+
 		/** set callback function */
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, RestClient::write_callback);
+
 		/** set data object to pass to callback function */
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &ret);
+
 		/** set the header callback function */
 		curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, RestClient::header_callback);
+
 		/** callback object for headers */
 		curl_easy_setopt(curl, CURLOPT_HEADERDATA, &ret);
+
 		/** perform the actual query */
 		res = curl_easy_perform(curl);
 		if(res != CURLE_OK) {
@@ -81,25 +90,23 @@ RestClient::get(const std::string& url)
 }
 
 /**
- * @brief HTTP POST method
- *
- * @param url to query
- * @param ctype content type as string
- * @param data HTTP POST body
- *
- * @return response struct
+ * \brief HTTP POST method
+ * \param url to query
+ * \param ctype content type as string
+ * \param data HTTP POST body
+ * \return response struct
  */
-RestClient::response 
+RestClient::response_t
 RestClient::post(const std::string& url,
                                       const std::string& ctype,
                                       const std::string& data)
 {
 	/** create return struct */
-	RestClient::response ret = {};
+	RestClient::response_t ret = {};
 	/** build content-type header string */
 	std::string ctype_header = "Content-Type: " + ctype;
 
-	// use libcurl
+	/** use libcurl */
 	CURL *curl = NULL;
 	CURLcode res = CURLE_OK;
 
@@ -110,27 +117,37 @@ RestClient::post(const std::string& url,
 			curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 			curl_easy_setopt(curl, CURLOPT_USERPWD, RestClient::user_pass.c_str());
 		}
+
 		/** set user agent */
 		curl_easy_setopt(curl, CURLOPT_USERAGENT, RestClient::user_agent);
+
 		/** set query URL */
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+
 		/** Now specify we want to POST data */
 		curl_easy_setopt(curl, CURLOPT_POST, 1L);
+
 		/** set post fields */
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, data.size());
+
 		/** set callback function */
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, RestClient::write_callback);
+
 		/** set data object to pass to callback function */
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &ret);
+
 		/** set the header callback function */
 		curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, RestClient::header_callback);
+
 		/** callback object for headers */
 		curl_easy_setopt(curl, CURLOPT_HEADERDATA, &ret);
+
 		/** set content-type header */
 		curl_slist* header = NULL;
 		header = curl_slist_append(header, ctype_header.c_str());
 		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header);
+
 		/** perform the actual query */
 		res = curl_easy_perform(curl);
 		if(res != CURLE_OK) {
@@ -151,30 +168,28 @@ RestClient::post(const std::string& url,
 }
 
 /**
- * @brief HTTP PUT method
- *
- * @param url to query
- * @param ctype content type as string
- * @param data HTTP PUT body
- *
- * @return response struct
+ * \brief HTTP PUT method
+ * \param url to query
+ * \param ctype content type as string
+ * \param data HTTP PUT body
+ * \return response struct
  */
-RestClient::response 
+RestClient::response_t 
 RestClient::put(const std::string& url,
 		const std::string& ctype,
 		const std::string& data)
 {
 	/** create return struct */
-	RestClient::response ret = {};
+	RestClient::response_t ret = {};
 	/** build content-type header string */
 	std::string ctype_header = "Content-Type: " + ctype;
 
 	/** initialize upload object */
-	RestClient::upload_object up_obj;
+	RestClient::upload_object_t up_obj;
 	up_obj.data = data.c_str();
 	up_obj.length = data.size();
 
-	// use libcurl
+	/** use libcurl */
 	CURL *curl = NULL;
 	CURLcode res = CURLE_OK;
 
@@ -185,32 +200,43 @@ RestClient::put(const std::string& url,
 			curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 			curl_easy_setopt(curl, CURLOPT_USERPWD, RestClient::user_pass.c_str());
 		}
+
 		/** set user agent */
 		curl_easy_setopt(curl, CURLOPT_USERAGENT, RestClient::user_agent);
+
 		/** set query URL */
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+
 		/** Now specify we want to PUT data */
 		curl_easy_setopt(curl, CURLOPT_PUT, 1L);
 		curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+
 		/** set read callback function */
 		curl_easy_setopt(curl, CURLOPT_READFUNCTION, RestClient::read_callback);
+
 		/** set data object to pass to callback function */
 		curl_easy_setopt(curl, CURLOPT_READDATA, &up_obj);
+
 		/** set callback function */
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, RestClient::write_callback);
+
 		/** set data object to pass to callback function */
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &ret);
 		/** set the header callback function */
+
 		curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, RestClient::header_callback);
 		/** callback object for headers */
+
 		curl_easy_setopt(curl, CURLOPT_HEADERDATA, &ret);
 		/** set data size */
+
 		curl_easy_setopt(curl, CURLOPT_INFILESIZE, static_cast<long>(up_obj.length));
 
 		/** set content-type header */
 		curl_slist* header = NULL;
 		header = curl_slist_append(header, ctype_header.c_str());
 		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, header);
+
 		/** perform the actual query */
 		res = curl_easy_perform(curl);
 		if(res != CURLE_OK) {
@@ -231,22 +257,20 @@ RestClient::put(const std::string& url,
 }
 
 /**
- * @brief HTTP DELETE method
- *
- * @param url to query
- *
- * @return response struct
+ * \brief HTTP DELETE method
+ * \param url to query
+ * \return response struct
  */
-RestClient::response 
+RestClient::response_t 
 RestClient::del(const std::string& url)
 {
 	/** create return struct */
-	RestClient::response ret = {};
+	RestClient::response_t ret = {};
 
 	/** we want HTTP DELETE */
 	const char* http_delete = "DELETE";
 
-	// use libcurl
+	/** use libcurl */
 	CURL *curl = NULL;
 	CURLcode res = CURLE_OK;
 
@@ -257,20 +281,28 @@ RestClient::del(const std::string& url)
 			curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 			curl_easy_setopt(curl, CURLOPT_USERPWD, RestClient::user_pass.c_str());
 		}
+
 		/** set user agent */
 		curl_easy_setopt(curl, CURLOPT_USERAGENT, RestClient::user_agent);
+
 		/** set query URL */
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+
 		/** set HTTP DELETE METHOD */
 		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, http_delete);
+
 		/** set callback function */
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, RestClient::write_callback);
+
 		/** set data object to pass to callback function */
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &ret);
+
 		/** set the header callback function */
 		curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, RestClient::header_callback);
+
 		/** callback object for headers */
 		curl_easy_setopt(curl, CURLOPT_HEADERDATA, &ret);
+
 		/** perform the actual query */
 		res = curl_easy_perform(curl);
 		if(res != CURLE_OK) {
@@ -290,46 +322,43 @@ RestClient::del(const std::string& url)
 }
 
 /**
- * @brief write callback function for libcurl
- *
- * @param data returned data of size (size*nmemb)
- * @param size size parameter
- * @param nmemb memblock parameter
- * @param userdata pointer to user data to save/work with return data
- *
- * @return (size * nmemb)
+ * \brief write callback function for libcurl
+ * \param data returned data of size (size*nmemb)
+ * \param size size parameter
+ * \param nmemb memblock parameter
+ * \param userdata pointer to user data to save/work with return data
+ * \return (size * nmemb)
  */
 size_t 
 RestClient::write_callback(void *data, size_t size, size_t nmemb, void *userdata)
 {
-	RestClient::response* r;
-	r = reinterpret_cast<RestClient::response*>(userdata);
+	RestClient::response_t* r;
+	r = reinterpret_cast<RestClient::response_t*>(userdata);
 	r->body.append(reinterpret_cast<char*>(data), size*nmemb);
 
 	return (size * nmemb);
 }
 
 /**
- * @brief header callback for libcurl
- *
- * @param data returned (header line)
- * @param size of data
- * @param nmemb memblock
- * @param userdata pointer to user data object to save headr data
- * @return size * nmemb;
+ * \brief header callback for libcurl
+ * \param data returned (header line)
+ * \param size of data
+ * \param nmemb memblock
+ * \param userdata pointer to user data object to save headr data
+ * \return size * nmemb;
  */
 size_t 
 RestClient::header_callback(void *data, size_t size, size_t nmemb, void *userdata)
 {
-	RestClient::response* r;
-	r = reinterpret_cast<RestClient::response*>(userdata);
+	RestClient::response_t* r;
+	r = reinterpret_cast<RestClient::response_t*>(userdata);
 	std::string header(reinterpret_cast<char*>(data), size*nmemb);
 	size_t seperator = header.find_first_of(":");
 	if(std::string::npos == seperator) {
-		//roll with non seperated headers...
+		/** roll with non seperated headers... */
 		trim(header);
 		if(0 == header.length() ) {
-			return (size * nmemb); //blank line;
+			return (size * nmemb); /**< blank line; */
     		}
     		r->headers[header] = "present";
 	} else {
@@ -344,29 +373,31 @@ RestClient::header_callback(void *data, size_t size, size_t nmemb, void *userdat
 }
 
 /**
- * @brief read callback function for libcurl
- *
- * @param pointer of max size (size*nmemb) to write data to
- * @param size size parameter
- * @param nmemb memblock parameter
- * @param userdata pointer to user data to read data from
- *
- * @return (size * nmemb)
+ * \brief read callback function for libcurl
+ * \param pointer of max size (size*nmemb) to write data to
+ * \param size size parameter
+ * \param nmemb memblock parameter
+ * \param userdata pointer to user data to read data from
+ * \return (size * nmemb)
  */
 size_t 
 RestClient::read_callback(void *data, size_t size, size_t nmemb, void *userdata)
 {
 	/** get upload struct */
-	RestClient::upload_object* u;
-	u = reinterpret_cast<RestClient::upload_object*>(userdata);
+	RestClient::upload_object_t* u;
+	u = reinterpret_cast<RestClient::upload_object_t*>(userdata);
+
 	/** set correct sizes */
 	size_t curl_size = size * nmemb;
 	size_t copy_size = (u->length < curl_size) ? u->length : curl_size;
+
 	/** copy data to buffer */
 	memcpy(data, u->data, copy_size);
+
 	/** decrement length and increment data pointer */
 	u->length -= copy_size;
 	u->data += copy_size;
+
 	/** return copied size */
 	return copy_size;
 }
