@@ -17,5 +17,10 @@ main(int argc, char *argv[])
 		std::cout << i << std::endl;
 	std::cout << startsWith("xx", "xx_3322\nxx_3") << std::endl;
 	std::cout << toString("1234") << std::endl;
+	static_if<true>([]{ std::cout << "true" << std::endl; },
+			[]{ std::cout << "false" << std::endl; });
+	
+	static_if<false>([]{ std::cout << "true" << std::endl; },
+			[]{ std::cout << "false" << std::endl; });
 	return 0;
 }
