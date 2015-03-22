@@ -1,0 +1,19 @@
+json:
+	-> pairs
+	-> pair
+pairs:
+	-> [pairlist]
+	-> []
+pairlist:
+	-> pair
+	-> pair, pairlist
+pair:
+	-> {key:val}
+	-> {}
+val:
+	-> json
+	-> number
+	-> string;
+	-> bool
+key:
+	-> string
