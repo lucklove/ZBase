@@ -5,8 +5,8 @@ void
 quickSort(void *data, unsigned int size, unsigned int num, int (*cmp_func)(const void *, const void *))
 {
 	char key[size];
-	if(num < 2)
-		return;
+	if(num < 2) 
+	return;
 	memcpy(key, data, size);
 	int k_index = 0;
 	for(int i = 0, j = num - 1; i < j;) {
