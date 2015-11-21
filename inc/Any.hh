@@ -38,7 +38,7 @@ struct Any
 		if (!is<U>())
 		{
 			std::cout << "can not cast " << typeid(U).name() << " to " << tp_index_.name() << std::endl;
-			throw std::logic_error{"bad cast"};
+			throw std::bad_cast{};
 		}
 
 		auto derived = dynamic_cast<Derived<U>*> (ptr_.get());
