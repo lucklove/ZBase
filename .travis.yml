@@ -15,7 +15,6 @@ install:
         - if [ "$CXX" == "g++"     ]; then .travis_scripts/gcc.sh; fi
 
 script: 
-        - sh gcc-4.8-fix.sh
         - mkdir build; pushd build;
         - cmake -D CMAKE_CXX_FLAGS=--coverage .. && make debug
         - make run_test
