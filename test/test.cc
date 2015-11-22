@@ -1,6 +1,18 @@
-#define BOOST_TEST_MAIN
-#ifndef BOOST_ALL_DYN_LINK
-#include <boost/test/included/unit_test.hpp>
-#else
-#include <boost/test/unit_test.hpp>
-#endif
+#define TEST_MAIN
+#include "UnitTest.hh"
+
+struct T : std::logic_error
+{
+    using logic_error::logic_error;
+};
+
+TEST_CASE(test1)
+{
+    throw T{"llll"};
+    *(int *)0 = 0;
+}
+
+TEST_CASE(test2)
+{
+    throw std::logic_error{"hh"};   
+}

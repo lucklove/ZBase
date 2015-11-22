@@ -1,17 +1,17 @@
-#include <boost/test/unit_test.hpp>
-#include <string>
+#include "UnitTest.hh"
 #include "Varaint.hh"
+#include <string>
 
-BOOST_AUTO_TEST_CASE(varaint_test)
+TEST_CASE(varaint_test)
 {
     Variant<int, std::string, const char*> v;
     v = 47;
-    BOOST_REQUIRE(v.is<int>());
-    BOOST_CHECK(v.get<int>() == 47);
+    TEST_REQUIRE(v.is<int>());
+    TEST_CHECK(v.get<int>() == 47);
     v = std::string{"string"};
-    BOOST_REQUIRE(v.is<std::string>());
-    BOOST_CHECK(v.get<std::string>() == "string");
+    TEST_REQUIRE(v.is<std::string>());
+    TEST_CHECK(v.get<std::string>() == "string");
     v = "const char*";
-    BOOST_REQUIRE(v.is<const char*>());
-    BOOST_CHECK(v.get<const char*>() == std::string{"const char*"});
+    TEST_REQUIRE(v.is<const char*>());
+    TEST_CHECK(v.get<const char*>() == std::string{"const char*"});
 }

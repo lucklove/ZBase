@@ -1,4 +1,4 @@
-#include <boost/test/unit_test.hpp>
+#include "UnitTest.hh"
 #include "Optional.hh"
 
 Optional<int> func(bool f)
@@ -13,9 +13,9 @@ Optional<int> func(bool f)
     }    
 }
 
-BOOST_AUTO_TEST_CASE(optional_test)
+TEST_CASE(optional_test)
 {
-    BOOST_CHECK(func(true));   
-    BOOST_CHECK(!func(false)); 
-    BOOST_CHECK(*func(true) == 47); 
+    TEST_CHECK(func(true));   
+    TEST_CHECK(!func(false)); 
+    TEST_CHECK(*func(true) == 47);
 }
