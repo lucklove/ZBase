@@ -6,10 +6,10 @@
 #include <exception>
 #include <csignal>
 
-struct BaseSuite
+struct BaseCase
 {
     virtual void run() = 0;
-    virtual ~BaseSuite() = default;
+    virtual ~BaseCase() = default;
 };
 
 struct CheckFailed : std::exception {};
@@ -17,13 +17,13 @@ struct CheckFailed : std::exception {};
 class UnitTest
 {
 private:
-    UnitTest() : last_checked_line{0}, error_num{0} {}
-    std::vector<BaseSuite*> test_suites_;
+    UnitTest() : last_checked_line_{0}, failure_num_{0} {}
+    std::vector<BaseCase*> test_cases_;
+    std::string last_checked_file_;
+    size_t last_checked_line_;
+    size_t failure_num_;
 
 public:
-    std::string last_checked_file;
-    size_t last_checked_line;
-    size_t error_num;
 
     static UnitTest& getInstance()
     {
@@ -33,34 +33,62 @@ public:
 
     void runAll()
     {
-        std::cout << "running " << test_suites_.size() << " tests..." << std::endl;
-        for(BaseSuite *test : test_suites_)
+        std::cout << "running " << test_cases_.size() << " tests..." << std::endl;
+        for(BaseCase *test : test_cases_)
             test->run();
-        std::cout << error_num << " errors detected." << std::endl;
     }
 
-    void registerTestSuite(BaseSuite *test)
+    void registerTestCase(BaseCase *test)
     {
-        test_suites_.push_back(test);
+        test_cases_.push_back(test);
+    }
+
+    void printLastCheckedPoint()
+    {
+        std::cout << last_checked_file_ << "(" << last_checked_line_ << ")" << ": last checkpoint" << std::endl;
+    }
+ 
+    void checkFile(const std::string& file)
+    {
+        last_checked_file_ = file;
+    }
+
+    void checkLine(size_t line)
+    {
+        last_checked_line_ = line;
+    }
+
+    void failure()
+    {
+        ++failure_num_;
+    }
+
+    size_t getFailureNum()
+    {
+        return failure_num_;
     }
 };
 
-struct TestSuite : BaseSuite
+struct TestCase : BaseCase
 {
 public:
-    TestSuite(std::function<void()> method, const std::string& name, const std::string& file, size_t line) 
+    TestCase(std::function<void()> method, const std::string& name, const std::string& file, size_t line) 
         : method_{method}, case_name_{name}, defined_file_{file}, defined_line_{line}
     {
-        UnitTest::getInstance().registerTestSuite(this);
+        UnitTest::getInstance().registerTestCase(this);
     }
-   
+  
     void run() override
     {
         try
         {
-            UnitTest::getInstance().last_checked_file = defined_file_;
-            UnitTest::getInstance().last_checked_line = defined_line_;
+            UnitTest::getInstance().checkFile(defined_file_);
+            UnitTest::getInstance().checkLine(defined_line_);
+            size_t old_failure_num = UnitTest::getInstance().getFailureNum();
             method_(); 
+            int failures = UnitTest::getInstance().getFailureNum() - old_failure_num;
+            if(failures)
+                std::cout << failures << " failures are detected in the test case \"" << case_name_ << "\"" << std::endl;
         }
         catch(CheckFailed&)
         {
@@ -68,22 +96,20 @@ public:
         }
         catch(std::exception& e)
         {
-            ++UnitTest::getInstance().error_num;
+            UnitTest::getInstance().failure();
             std::cout << "unknown location(0): fatal error: in \"" << case_name_ << "\": "
                 << typeid(e).name() << ": " << e.what() << std::endl;
-            std::cout << UnitTest::getInstance().last_checked_file << "("
-                << UnitTest::getInstance().last_checked_line << ")" << ": last checkpoint" << std::endl;
+            UnitTest::getInstance().printLastCheckedPoint();
         }
         catch(...)
         {
-            ++UnitTest::getInstance().error_num;
+            UnitTest::getInstance().failure();
             std::cout << "unknown location(0): fatal error: in \"" << case_name_ << "\": unknown type" << std::endl;
-            std::cout << UnitTest::getInstance().last_checked_file << "("
-                << UnitTest::getInstance().last_checked_line << ")" << ": last checkpoint" << std::endl;
+            UnitTest::getInstance().printLastCheckedPoint();
         }
     }
 
-    ~TestSuite() override = default;
+    ~TestCase() override = default;
     
 private:
     std::function<void()> method_;
@@ -94,24 +120,39 @@ private:
 
 
 #ifdef TEST_MAIN
+[[noreturn]]
+static void report_and_exit()
+{
+    std::cout << "\n**** ";
+    std::cout << UnitTest::getInstance().getFailureNum() << " failures are detected." << std::endl;
+    exit(UnitTest::getInstance().getFailureNum());
+}
+
 int main()
 {
+    signal(SIGSEGV, [](int)
+    {
+        UnitTest::getInstance().failure();
+        std::cout << "unknown location(0): fatal error: received SIGSEGV." << std::endl;
+        UnitTest::getInstance().printLastCheckedPoint();
+        report_and_exit();
+    });
     UnitTest::getInstance().runAll();    
-    return UnitTest::getInstance().error_num;    
+    report_and_exit();    
 }
 #endif
 
 #define TEST_CASE(test_name)                                                                    \
 void test_name();                                                                               \
-TestSuite test_name##_suite{test_name, #test_name, __FILE__, __LINE__};                         \
+TestCase test_name##_case{test_name, #test_name, __FILE__, __LINE__};                           \
 void test_name()
 
 #define G_CHECK(cond, strict)                                                                   \
 do {                                                                                            \
-    UnitTest::getInstance().last_checked_file = __FILE__;                                       \
-    UnitTest::getInstance().last_checked_line = __LINE__;                                       \
+    UnitTest::getInstance().checkFile(__FILE__);                                                \
+    UnitTest::getInstance().checkLine(__LINE__);                                                \
     if(!(cond)) {                                                                               \
-        ++UnitTest::getInstance().error_num;                                                    \
+        UnitTest::getInstance().failure();                                                      \
         if(strict) {                                                                            \
             std::cout << "critical error at " __FILE__ "(" << __LINE__ << ")." << std::endl;    \
             std::cout << "check \"" << #cond << "\" failed." << std::endl;                      \
@@ -128,4 +169,3 @@ G_CHECK(cond, false)
 
 #define TEST_REQUIRE(cond)                                                                      \
 G_CHECK(cond, true)
-            
