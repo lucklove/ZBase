@@ -16,11 +16,11 @@ Introduction
 
 | Functionality | Documentation | Header    | Test  |
 |---------------|---------------|-----------|-------|
-| Unit testing  | [UnitTest.hh](#UnitTesthh) | UnitTest.hh | see [test](test) |
-| Wrap async call to avoid callback hell | [AsyncWrapper.hh](#AsyncWrapperhh) | AsyncWrapper.hh | [here](test/AsyncWrapper.cc) |
-| Danamic generic type | [Any.hh](#Anyhh) | Any.hh | [here](test/Any.cc) |
-| Uninitialized concept | [Optional.hh](#Optionalhh) | Optional.hh | [here](test/Optional.cc) |
-| multi-type, single value container | [Variant.hh](#Varianthh) | Variant.hh | [here](test/Variant.cc) | 
+| Unit testing  | [UnitTest.hh](#unittesthh) | UnitTest.hh | see [test](test) |
+| Wrap async call to avoid callback hell | [AsyncWrapper.hh](#asnycwrapperhh) | AsyncWrapper.hh | [here](test/AsyncWrapper.cc) |
+| Danamic generic type | [Any.hh](#anyhh) | Any.hh | [here](test/Any.cc) |
+| Uninitialized concept | [Optional.hh](#optionalhh) | Optional.hh | [here](test/Optional.cc) |
+| multi-type, single value container | [Variant.hh](#varianthh) | Variant.hh | [here](test/Variant.cc) | 
 
 Usage
 -----
@@ -130,7 +130,7 @@ Variant.hh
 
     The variant class template is a safe, generic, stack-based discriminated union container,    
     Whereas standard containers such as std::vector may be thought of as "multi-value, single     
-type," variant is "multi-type, single value."
+    type," variant is "multi-type, single value."
 
 ```c++
 Variant<int, bool, std::string> var;    /**< may contains int, bool or std::string */
