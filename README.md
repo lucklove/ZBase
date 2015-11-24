@@ -17,10 +17,10 @@ Introduction
 | Functionality | Documentation | Header    | Test  |
 |---------------|---------------|-----------|-------|
 | Unit testing  | [UnitTest.hh](#unittesthh) | UnitTest.hh | see [test](test) |
-| Wrap async call to avoid callback hell | [AsyncWrapper.hh](#asyncwrapperhh) | AsyncWrapper.hh | [here](test/AsyncWrapper.cc) |
+| Wrap async call to avoid callback hell | [AsyncWrapper.hh](#asnycwrapperhh) | AsyncWrapper.hh | [here](test/AsyncWrapper.cc) |
 | Danamic generic type | [Any.hh](#anyhh) | Any.hh | [here](test/Any.cc) |
 | Uninitialized concept | [Optional.hh](#optionalhh) | Optional.hh | [here](test/Optional.cc) |
-| multi-type, single value container | [Variant.hh](#Varianthh) | Variant.hh | [here](test/Variant.cc) | 
+| multi-type, single value container | [Variant.hh](#varianthh) | Variant.hh | [here](test/Variant.cc) | 
 
 Usage
 -----
