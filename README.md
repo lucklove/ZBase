@@ -1,4 +1,4 @@
-Usefull utils
+Useful utils
 =============
 
 [![Build Status](https://travis-ci.org/lucklove/ZBase.svg?branch=master)](https://travis-ci.org/lucklove/ZBase)
