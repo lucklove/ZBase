@@ -1,5 +1,5 @@
 #include "UnitTest.hh"
-#include "Varaint.hh"
+#include "Variant.hh"
 #include <string>
 
 TEST_CASE(varaint_test)

@@ -3,7 +3,7 @@ SET(TEST_SOURCES
     AsyncWrapper.cc
     Optional.cc
     Any.cc
-    Varaint.cc
+    Variant.cc
 )
 
 INCLUDE_DIRECTORIES(../inc)
