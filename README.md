@@ -39,6 +39,10 @@ TEST_CASE(a_test_case)
 {
     TEST_REQUIRE(condition);    /**< if this fail, the next lines in this case will not be executed */
     TEST_CHECK(condition);      /**< if this fail, failure will be report, but test go on */
+    TEST_CHECK(condition, "extra dialog msg");  /**< if this fail, "extra dialog msg" will be printed. */
+    TEST_REQUIRE(condition, "multi", "line", "extra", "msg");
+    TEST_CHECK(condigion, []{ /** do something here */ });
+    TEST_REQUIRE(condition, logger, args_to_logger);    /**< logger can be any callable object */
     throw some_thing{msg};      /**< this exception will be caught by unit testing framework and a failure will be report */   
 }
 

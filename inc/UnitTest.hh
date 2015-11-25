@@ -118,7 +118,6 @@ private:
     size_t defined_line_; 
 };
 
-
 #ifdef TEST_MAIN
 [[noreturn]]
 static void report_and_exit()
@@ -142,30 +141,44 @@ int main()
 }
 #endif
 
+template <typename F, typename... Args, typename = decltype(std::declval<F>()(std::declval<Args>()...))>
+void do_check_failed(F&& f, Args&&... args)
+{
+    f(std::forward<Args>(args)...);    
+}
+
+template <typename... Msgs>
+void do_check_failed(Msgs&&... msgs)
+{
+    [](auto&&...){}((std::cout << msgs << std::endl, 0)...);
+}
+
 #define TEST_CASE(test_name)                                                                    \
 void test_name();                                                                               \
 TestCase test_name##_case{test_name, #test_name, __FILE__, __LINE__};                           \
 void test_name()
 
-#define G_CHECK(cond, strict)                                                                   \
+#define G_CHECK(cond, strict, ...)                                                              \
 do {                                                                                            \
     UnitTest::getInstance().checkFile(__FILE__);                                                \
     UnitTest::getInstance().checkLine(__LINE__);                                                \
     if(!(cond)) {                                                                               \
         UnitTest::getInstance().failure();                                                      \
         if(strict) {                                                                            \
-            std::cout << "critical error at " __FILE__ "(" << __LINE__ << ")." << std::endl;    \
             std::cout << "check \"" << #cond << "\" failed." << std::endl;                      \
+            std::cout << "critical error at " __FILE__ "(" << __LINE__ << ")." << std::endl;    \
+            do_check_failed(__VA_ARGS__);                                                       \
             throw CheckFailed{};                                                                \
         } else {                                                                                \
-            std::cout << "check \"" << #cond << "\" failed " << "at "                           \
+            std::cout << "check \"" << #cond << "\" failed." << "at "                           \
                 << __FILE__ << "(" << __LINE__ << ")" << std::endl;                             \
+            do_check_failed(__VA_ARGS__);                                                       \
         }                                                                                       \
     }                                                                                           \
 } while(0)
 
-#define TEST_CHECK(cond)                                                                        \
-G_CHECK(cond, false)
+#define TEST_CHECK(cond, ...)                                                                   \
+G_CHECK(cond, false, __VA_ARGS__)
 
-#define TEST_REQUIRE(cond)                                                                      \
-G_CHECK(cond, true)
+#define TEST_REQUIRE(cond, ...)                                                                 \
+G_CHECK(cond, true, __VA_ARGS__)
