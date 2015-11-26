@@ -9,7 +9,7 @@ Design principle
 
 - [Header only](https://github.com/lucklove/ZBase/tree/master/inc)
 - Low dependence:  
-    never dependent on other headers(include which from inc/) except which from ISO C++ and POSIX.
+    no dependency on other headers(include which from inc/) except which from ISO C++.
 
 Introduction
 ------------
@@ -21,6 +21,7 @@ Introduction
 | Danamic generic type | [Any.hh](#anyhh) | Any.hh | [here](test/Any.cc) |
 | Uninitialized concept | [Optional.hh](#optionalhh) | Optional.hh | [here](test/Optional.cc) |
 | multi-type, single value container | [Variant.hh](#varianthh) | Variant.hh | [here](test/Variant.cc) | 
+| compile-time function information |           | function_traits.hh | [here](test/function_traits.cc) | 
 
 Usage
 -----
@@ -103,9 +104,9 @@ It supports copying of any value type and safe checked extraction of that value 
 Any a, b = 47;              /**< a contains null, b contains int(47) */
 if(b.is<int>())             /**< check if b contains a int, should be true */
 {
-    a = b.cast<int>();      /**< take which b contains, now a and b both contain int(47) */
+    a = b.get<int>();       /**< take which b contains, now a and b both contain int(47) */
     Any c = a;              /**< c contains int instead of Any */
-    std::cout << c.cast<bool>() << std::endl;   /**< this will throw std::bad_cast */
+    std::cout << c.get<bool>() << std::endl;   /**< this will throw std::bad_cast */
 }
 ```
 

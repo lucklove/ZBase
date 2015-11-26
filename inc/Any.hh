@@ -9,7 +9,7 @@
  * \example
  *      Any a = "const char*";
  *      if(a.is<const char*>())
- *          std::cout << a.cast<const char*>() << std::endl;
+ *          std::cout << a.get<const char*>() << std::endl;
  */
 struct Any
 {
@@ -33,7 +33,7 @@ struct Any
 
 	/* 将Any转换为实际的类型 */
 	template<class U>
-	U& cast()
+	U& get()
 	{
 		if (!is<U>())
 		{

@@ -154,9 +154,9 @@ void do_check_failed(Msgs&&... msgs)
 }
 
 #define TEST_CASE(test_name)                                                                    \
-void test_name();                                                                               \
-TestCase test_name##_case{test_name, #test_name, __FILE__, __LINE__};                           \
-void test_name()
+static void test_name();                                                                        \
+static TestCase test_name##_case{test_name, #test_name, __FILE__, __LINE__};                    \
+static void test_name()
 
 #define G_CHECK(cond, strict, ...)                                                              \
 do {                                                                                            \

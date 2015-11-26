@@ -4,6 +4,7 @@ SET(TEST_SOURCES
     Optional.cc
     Any.cc
     Variant.cc
+    function_traits.cc
 )
 
 INCLUDE_DIRECTORIES(../inc)
