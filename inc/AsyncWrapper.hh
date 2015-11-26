@@ -7,7 +7,7 @@ template <typename> struct AsyncWrapper;
  * \brief [API] 包装异步调用, 通过链式调用避免回调地狱.
  * \param func 异步函数, 前n个参数是异步回调函数.
  * \example
- *      asyncWrap([](auto connect_callback)
+ *      wrapAsync([](auto connect_callback)
  *      {
  *          async_connect("xxx.xxx.com", 8080, connect_callback);
  *      }).then([](auto send_callback, bool is_success)
@@ -34,7 +34,7 @@ template <typename> struct AsyncWrapper;
  *      通过这种方式, 我们可以避免在回调函数connect_callback中调用async_send(这样需要嵌套send_callback).
  */
 template <typename AsyncFuncT>
-AsyncWrapper<AsyncFuncT> asyncWrap(AsyncFuncT func)
+AsyncWrapper<AsyncFuncT> wrapAsync(AsyncFuncT func)
 {
     return AsyncWrapper<AsyncFuncT>(func);   
 }
@@ -50,7 +50,7 @@ public:
     template <typename... FuncTs>
     auto then(FuncTs... callbacks)
     {
-        return asyncWrap([=](auto... ps)
+        return wrapAsync([=](auto... ps)
         {
             /** FIXME: internal compiler error in gcc */
             auto callback_wrapper = [=](auto callback)

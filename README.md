@@ -80,7 +80,7 @@ async_function(params, [](callback_param_decls)
 ```
 Now, we can do it in this way:
 ```c++
-asyncWrap([](auto callback, callback_param_decls)
+wrapAsync([](auto callback, callback_param_decls)
 {
     async_func(params, callback);
 }).then([](auto callback, callback_param_decls)

@@ -3,7 +3,7 @@
 
 TEST_CASE(async_wrapper_test)
 {
-    asyncWrap([](auto callback)
+    wrapAsync([](auto callback)
     {   
         callback(1);
     }).then([](auto callback1, auto callback2, int x)
