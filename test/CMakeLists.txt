@@ -5,6 +5,7 @@ SET(TEST_SOURCES
     Any.cc
     Variant.cc
     function_traits.cc
+    ScopeGuard.cc
 )
 
 INCLUDE_DIRECTORIES(../inc)

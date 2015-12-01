@@ -22,6 +22,7 @@ Introduction
 | Uninitialized concept | [Optional.hh](#optionalhh) | Optional.hh | [here](test/Optional.cc) |
 | multi-type, single value container | [Variant.hh](#varianthh) | Variant.hh | [here](test/Variant.cc) | 
 | compile-time function information |           | function_traits.hh | [here](test/function_traits.cc) | 
+| scope guard | [ScopeGuard.hh](#scopeguardhh) | ScopeGuard.hh | [here](test/ScopeGuard.cc) | 
 
 Usage
 -----
@@ -146,4 +147,32 @@ Variant<int, bool, std::string> var1 = var;                     /**< var1 contai
 Variant<int, bool, std::string> var2 = "string";                /**< compile error */
 Variant<int, bool, const char*> var3 = "const char*";           /**< ok */
 Variant<int, bool, std::string> var4 = std::string{"string"};   /**< ok */
+```
+
+ScopeGuard.hh
+-------------
+
+```c++
+HANDLE func()
+{
+    HANDLE h = CreateSomeObject(...);
+    ScopeGuard onErrorExit([&] { CloseHandle(h); h = nullptr; });
+
+    //...
+    if(error0_occur)
+    {
+        return nullptr;
+    }
+
+    //...
+
+    if(error1_occur)
+    {
+        return nullptr;
+    }
+
+    //...
+    onErrorExit.dismiss()  // no error occur
+    return h;
+}
 ```
