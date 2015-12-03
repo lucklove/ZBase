@@ -3,16 +3,14 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include <exception>
 #include <csignal>
+#include <csetjmp>
 
 struct BaseCase
 {
     virtual void run() = 0;
     virtual ~BaseCase() = default;
 };
-
-struct CheckFailed : std::exception {};
 
 class UnitTest
 {
@@ -24,6 +22,11 @@ private:
     size_t failure_num_;
 
 public:
+    static jmp_buf& abort_case()
+    {
+        static jmp_buf buf;
+        return buf;
+    }
 
     static UnitTest& getInstance()
     {
@@ -35,7 +38,11 @@ public:
     {
         std::cout << "running " << test_cases_.size() << " tests..." << std::endl;
         for(BaseCase *test : test_cases_)
+        {
+            if(setjmp(abort_case())) 
+                continue;
             test->run();
+        }
     }
 
     void registerTestCase(BaseCase *test)
@@ -89,10 +96,6 @@ public:
             int failures = UnitTest::getInstance().getFailureNum() - old_failure_num;
             if(failures)
                 std::cout << failures << " failures are detected in the test case \"" << case_name_ << "\"" << std::endl;
-        }
-        catch(CheckFailed&)
-        {
-            /** do nothing */
         }
         catch(std::exception& e)
         {
@@ -168,7 +171,7 @@ do {                                                                            
             std::cout << "check \"" << #cond << "\" failed." << std::endl;                      \
             std::cout << "critical error at " __FILE__ "(" << __LINE__ << ")." << std::endl;    \
             do_check_failed(__VA_ARGS__);                                                       \
-            throw CheckFailed{};                                                                \
+            longjmp(UnitTest::abort_case(), true);                                              \
         } else {                                                                                \
             std::cout << "check \"" << #cond << "\" failed." << "at "                           \
                 << __FILE__ << "(" << __LINE__ << ")" << std::endl;                             \
