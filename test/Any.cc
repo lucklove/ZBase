@@ -16,6 +16,8 @@ TEST_CASE(any_basic_test)
     a = std::string{"string"};
     TEST_REQUIRE(a.is<std::string>());
     TEST_CHECK(a.get<std::string>() == "string");
+    Any b = a;
+    TEST_CHECK(b.is<std::string>());
 }
 
 TEST_CASE(any_functional_test)

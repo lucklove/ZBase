@@ -178,37 +178,37 @@ public:
 	}
 
 private:
-	void destroy(const std::type_index& index, void * buf)
+	void destroy(const std::type_index& index, void *buf)
 	{
         [](auto&&...){}((destroy0<Types>(index, buf), 0)...);
 	}
 
 	template<typename T>
-	void destroy0(const std::type_index& id, void* data)
+	void destroy0(const std::type_index& id, void *data)
 	{
 		if (id == std::type_index(typeid(T)))
 			reinterpret_cast<T*>(data)->~T();
 	}
 
-	void move(const std::type_index& old_t, void* old_v, void* new_v) 
+	void move(const std::type_index& old_t, void *old_v, void *new_v) 
 	{
         [](auto&&...){}((move0<Types>(old_t, old_v, new_v), 0)...);
 	}
 
 	template<typename T>
-	void move0(const std::type_index& old_t, void* old_v, void* new_v)
+	void move0(const std::type_index& old_t, void *old_v, void *new_v)
 	{
 		if (old_t == std::type_index(typeid(T)))
 			new (new_v)T(std::move(*reinterpret_cast<T*>(old_v)));
 	}
 
-	void copy(const std::type_index& old_t, void* old_v, void* new_v)
+	void copy(const std::type_index& old_t, const void *old_v, void *new_v)
 	{
         [](auto&&...){}((copy0<Types>(old_t, old_v, new_v), 0)...);
 	}
 
 	template<typename T>
-	void copy0(const std::type_index& old_t, void* old_v, void* new_v)
+	void copy0(const std::type_index& old_t, const void *old_v, void *new_v)
 	{
 		if (old_t == std::type_index(typeid(T)))
 			new (new_v)T(*reinterpret_cast<const T*>(old_v));

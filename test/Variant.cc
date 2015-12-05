@@ -14,4 +14,6 @@ TEST_CASE(varaint_test)
     v = "const char*";
     TEST_REQUIRE(v.is<const char*>());
     TEST_CHECK(v.get<const char*>() == std::string{"const char*"});
+    Variant<int, std::string, const char*> v2 = v;
+    TEST_CHECK(v.is<const char*>());
 }
