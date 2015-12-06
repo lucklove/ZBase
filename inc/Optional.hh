@@ -81,6 +81,16 @@ public:
         throw std::logic_error{"try to get data in a Optional which is not init"};
     }
 
+    T* operator->()
+    {
+        return &operator*();
+    }
+
+    const T* operator->() const
+    {
+        return &operator*();
+    }
+
     bool operator==(const Optional<T>& rhs) const
     {
         return (!bool(*this)) != (!rhs) ? false : (!bool(*this) ? true : (*(*this)) == (*rhs));
