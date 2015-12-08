@@ -1,7 +1,7 @@
 #pragma once
 #include <type_traits>
 #include <utility>
-#include <exception>
+#include <stdexcept>
 
 template<typename T>
 class Optional
@@ -68,17 +68,22 @@ public:
 
     T& operator*()
     {
-        return *((T*) (&data_));
-    }
-
-    const T& operator*() const
-    {
-        if (isInit())
+        if(isInit())
         {
             return *((T*) (&data_));
         }
 
-        throw std::logic_error{"try to get data in a Optional which is not init"};
+        throw std::logic_error{"try to get data in a Optional which is not initialized"};
+    }
+
+    const T& operator*() const
+    {
+        if(isInit())
+        {
+            return *((T*) (&data_));
+        }
+
+        throw std::logic_error{"try to get data in a Optional which is not initialized"};
     }
 
     T* operator->()
