@@ -84,6 +84,7 @@ class Variant
 		align_size = MaxAlign<Types...>::value
 	};
 	using data_t = typename std::aligned_storage<data_size, align_size>::type;
+
 public:
 	template<int index>
 	using IndexType = typename At<index, Types...>::type;
