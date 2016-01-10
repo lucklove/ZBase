@@ -66,7 +66,7 @@ public:
         last_checked_line_ = line;
     }
 
-    void addFailure()
+    void incFailure()
     {
         ++failure_num_;
     }
@@ -103,13 +103,13 @@ public:
         }
         catch(std::exception& e)
         {
-            UnitTest::getInstance().addFailure();
+            UnitTest::getInstance().incFailure();
             std::cout << ">>> fatal error: in \"" << case_name_ << "\": " << typeid(e).name() << ": " << e.what() << std::endl;
             UnitTest::getInstance().printLastCheckedPoint();
         }
         catch(...)
         {
-            UnitTest::getInstance().addFailure();
+            UnitTest::getInstance().incFailure();
             std::cout << ">>> fatal error: in \"" << case_name_ << "\": unknown type exception" << std::endl;
             UnitTest::getInstance().printLastCheckedPoint();
         }
@@ -137,7 +137,7 @@ int main()
 {
     signal(SIGSEGV, [](int)
     {
-        UnitTest::getInstance().addFailure();
+        UnitTest::getInstance().incFailure();
         std::cout << ">>> fatal error: received SIGSEGV." << std::endl;
         UnitTest::getInstance().printLastCheckedPoint();
         report_and_exit();
@@ -169,7 +169,7 @@ do {                                                                            
     UnitTest::getInstance().checkFile(__FILE__);                                                \
     UnitTest::getInstance().checkLine(__LINE__);                                                \
     if(!(cond)) {                                                                               \
-        UnitTest::getInstance().addFailure();                                                   \
+        UnitTest::getInstance().incFailure();                                                   \
         if(strict) {                                                                            \
             std::cout << ">>> check \"" << #cond << "\" failed." << std::endl;                  \
             std::cout << ">>> critical error at " __FILE__ "(" << __LINE__ << ")." << std::endl;\
