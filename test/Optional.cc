@@ -1,5 +1,6 @@
 #include "UnitTest.hh"
 #include "Optional.hh"
+#include <memory>
 
 Optional<int> func(bool f)
 {
@@ -75,4 +76,14 @@ TEST_CASE(init_test)
         flag = true;
     }
     TEST_CHECK(flag);
+}
+
+TEST_CASE(non_copyable)
+{
+    std::unique_ptr<int> x = std::make_unique<int>(47);
+    Optional<std::unique_ptr<int>> opt = std::move(x);
+    TEST_REQUIRE(opt);
+    auto y = std::move(*opt);
+    TEST_REQUIRE(y); 
+    TEST_CHECK(*y == 47); 
 }
