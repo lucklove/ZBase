@@ -79,6 +79,7 @@ public:
     }
 };
 
+template <bool should_be_included>
 struct TestCase : BaseCase
 {
 public:
@@ -142,6 +143,14 @@ private:
     bool is_aborted_; 
 };
 
+template <>
+struct TestCase<false>
+{
+    TestCase(std::function<void()>, const std::string&, const std::string&, size_t) 
+    {
+    }
+};  
+
 #ifdef TEST_MAIN
 [[noreturn]]
 static void report_and_exit()
@@ -177,15 +186,17 @@ void do_check_failed(Msgs&&... msgs)
     (void)std::initializer_list<int>{(std::cout << ">>> " << msgs << std::endl, 0)...};
 }
 
-#define TEST_CASE(test_name)                                                                    \
+#define GEN_TEST_CASE(test_name, should_be_included, ...)                                       \
 static void test_name();                                                                        \
-static TestCase test_name##_case{test_name, #test_name, __FILE__, __LINE__};                    \
+static TestCase<should_be_included> test_name##_case{test_name, #test_name, __FILE__, __LINE__};\
 static void test_name()
+
+#define TEST_CASE(...) GEN_TEST_CASE(__VA_ARGS__, true)
 
 #define G_CHECK(cond, strict, ...)                                                              \
 do {                                                                                            \
     BaseCase* cur_case = UnitTest::getInstance().currentCase();                                 \
-    if(cur_case->isAborted())                                                                  \
+    if(cur_case->isAborted())                                                                   \
         throw AbortThisCase{};                                                                  \
     UnitTest::getInstance().checkFile(__FILE__);                                                \
     UnitTest::getInstance().checkLine(__LINE__);                                                \
