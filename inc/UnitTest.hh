@@ -79,7 +79,7 @@ public:
     }
 };
 
-template <bool should_be_included>
+template <bool should_be_included = true>
 struct TestCase : BaseCase
 {
 public:
@@ -186,12 +186,10 @@ void do_check_failed(Msgs&&... msgs)
     (void)std::initializer_list<int>{(std::cout << ">>> " << msgs << std::endl, 0)...};
 }
 
-#define GEN_TEST_CASE(test_name, should_be_included, ...)                                       \
+#define TEST_CASE(test_name, ...)                                                               \
 static void test_name();                                                                        \
-static TestCase<should_be_included> test_name##_case{test_name, #test_name, __FILE__, __LINE__};\
+static TestCase<__VA_ARGS__> test_name##_case{test_name, #test_name, __FILE__, __LINE__};       \
 static void test_name()
-
-#define TEST_CASE(...) GEN_TEST_CASE(__VA_ARGS__, true)
 
 #define G_CHECK(cond, strict, ...)                                                              \
 do {                                                                                            \
